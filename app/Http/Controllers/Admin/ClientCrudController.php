@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\AddressRequest;
+use App\Http\Requests\ClientRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 /**
- * Class AddressCrudController
+ * Class ClientCrudController
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class AddressCrudController extends CrudController
+class ClientCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
@@ -21,9 +21,9 @@ class AddressCrudController extends CrudController
 
     public function setup()
     {
-        $this->crud->setModel('App\Models\Address');
-        $this->crud->setRoute(config('backpack.base.route_prefix') . '/address');
-        $this->crud->setEntityNameStrings('address', 'addresses');
+        $this->crud->setModel('App\Models\Client');
+        $this->crud->setRoute(config('backpack.base.route_prefix') . '/client');
+        $this->crud->setEntityNameStrings('client', 'clients');
     }
 
     protected function setupListOperation()
@@ -34,7 +34,7 @@ class AddressCrudController extends CrudController
 
     protected function setupCreateOperation()
     {
-        $this->crud->setValidation(AddressRequest::class);
+        $this->crud->setValidation(ClientRequest::class);
 
         // TODO: remove setFromDb() and manually define Fields
         $this->crud->setFromDb();

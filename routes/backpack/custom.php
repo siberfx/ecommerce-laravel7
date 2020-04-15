@@ -11,23 +11,52 @@ Route::group([
     'middleware' => ['web', config('backpack.base.middleware_key', 'admin')],
     'namespace'  => 'App\Http\Controllers\Admin',
 ], function () { // custom admin routes
-    Route::crud('address', 'AddressCrudController');
-    Route::crud('attribute', 'AttributeCrudController');
-    Route::crud('attributeset', 'AttributeSetCrudController');
-    Route::crud('attributevalue', 'AttributeValueCrudController');
-    Route::crud('carrier', 'CarrierCrudController');
-    Route::crud('cartrule', 'CartRuleCrudController');
-    Route::crud('category', 'CategoryCrudController');
-    Route::crud('company', 'CompanyCrudController');
-    Route::crud('country', 'CountryCrudController');
-    Route::crud('currency', 'CurrencyCrudController');
-    Route::crud('notificationtemplate', 'NotificationTemplateCrudController');
-    Route::crud('order', 'OrderCrudController');
-    Route::crud('orderstatus', 'OrderStatusCrudController');
-    Route::crud('orderstatushistory', 'OrderStatusHistoryCrudController');
-    Route::crud('product', 'ProductCrudController');
-    Route::crud('productgroup', 'ProductGroupCrudController');
-    Route::crud('productimage', 'ProductImageCrudController');
-    Route::crud('specificprice', 'SpecificPriceCrudController');
-    Route::crud('tax', 'TaxCrudController');
+    Route::crud('categories', 'CategoryCrudController');
+    Route::crud('currencies', 'CurrencyCrudController');
+    Route::crud('carriers', 'CarrierCrudController');
+    Route::crud('attributes', 'AttributeCrudController');
+    Route::crud('attributes-sets', 'AttributeSetCrudController');
+    Route::crud('products', 'ProductCrudController');
+    Route::crud('taxes', 'TaxCrudController');
+    Route::crud('orders', 'OrderCrudController');
+    Route::crud('order-statuses', 'OrderStatusCrudController');
+    Route::crud('cart-rules', 'CartRuleCrudController');
+    Route::crud('specific-prices', 'SpecificPriceCrudController');
+    Route::crud('notification-templates', 'NotificationTemplateCrudController');
+    Route::crud('clients', 'ClientCrudController');
+    Route::crud('users', 'UserCrudController');
 }); // this should be the absolute last line of this file
+
+
+// Ajax
+Route::group(['middleware' => 'admin',
+    'prefix' => 'ajax',
+    'namespace' => 'Admin'
+], function() {
+    // Get attributes by set id
+    Route::post('attribute-sets/list-attributes', ['as' => 'getAttrBySetId', 'uses' => 'AttributeSetCrudController@ajaxGetAttributesBySetId']);
+
+    // Product images upload routes
+    Route::post('product/image/upload', ['as' => 'uploadProductImages', 'uses' => 'ProductCrudController@ajaxUploadProductImages']);
+    Route::post('product/image/reorder', ['as' => 'reorderProductImages', 'uses' => 'ProductCrudController@ajaxReorderProductImages']);
+    Route::post('product/image/delete', ['as' => 'deleteProductImage', 'uses' => 'ProductCrudController@ajaxDeleteProductImage']);
+
+    // Get group products by group id
+    Route::post('product-group/list/products', ['as' => 'getGroupProducts', 'uses' => 'ProductGroupController@getGroupProducts']);
+    Route::post('product-group/list/ungrouped-products', ['as' => 'getUngroupedProducts', 'uses' => 'ProductGroupController@getUngroupedProducts']);
+    Route::post('product-group/add/product', ['as' => 'addProductToGroup', 'uses' => 'ProductGroupController@addProductToGroup']);
+    Route::post('product-group/remove/product', ['as' => 'removeProductFromGroup', 'uses' => 'ProductGroupController@removeProductFromGroup']);
+
+    // Client address
+    Route::post('client/list/addresses', ['as' => 'getClientAddresses', 'uses' => 'ClientAddressController@getClientAddresses']);
+    Route::post('client/add/address', ['as' => 'addClientAddress', 'uses' => 'ClientAddressController@addClientAddress']);
+    Route::post('client/delete/address', ['as' => 'deleteClientAddress', 'uses' => 'ClientAddressController@deleteClientAddress']);
+
+    // Client company
+    Route::post('client/list/companies', ['as' => 'getClientCompanies', 'uses' => 'ClientCompanyController@getClientCompanies']);
+    Route::post('client/add/company', ['as' => 'addClientCompany', 'uses' => 'ClientCompanyController@addClientCompany']);
+    Route::post('client/delete/company', ['as' => 'deleteClientCompany', 'uses' => 'ClientCompanyController@deleteClientCompany']);
+
+    // Notification templates
+    Route::post('notification-templates/list-model-variables', ['as' => 'listModelVars', 'uses' => 'NotificationTemplateCrudController@listModelVars']);
+});

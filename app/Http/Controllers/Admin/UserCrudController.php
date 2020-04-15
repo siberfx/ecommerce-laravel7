@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\ProductImageRequest;
+use App\Http\Requests\UserRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 /**
- * Class ProductImageCrudController
+ * Class UserCrudController
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class ProductImageCrudController extends CrudController
+class UserCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
@@ -21,9 +21,9 @@ class ProductImageCrudController extends CrudController
 
     public function setup()
     {
-        $this->crud->setModel('App\Models\ProductImage');
-        $this->crud->setRoute(config('backpack.base.route_prefix') . '/productimage');
-        $this->crud->setEntityNameStrings('productimage', 'product_images');
+        $this->crud->setModel('App\Models\User');
+        $this->crud->setRoute(config('backpack.base.route_prefix') . '/user');
+        $this->crud->setEntityNameStrings('user', 'users');
     }
 
     protected function setupListOperation()
@@ -34,7 +34,7 @@ class ProductImageCrudController extends CrudController
 
     protected function setupCreateOperation()
     {
-        $this->crud->setValidation(ProductImageRequest::class);
+        $this->crud->setValidation(UserRequest::class);
 
         // TODO: remove setFromDb() and manually define Fields
         $this->crud->setFromDb();
