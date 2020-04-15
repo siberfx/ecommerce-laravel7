@@ -9,13 +9,20 @@
     "license": "MIT",
     "require": {
         "php": "^7.2.5",
+        "backpack/crud": "^4.0",
+        "backpack/permissionmanager": "^5.0",
+        "barryvdh/laravel-elfinder": "^0.4.5",
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^1.0",
         "guzzlehttp/guzzle": "^6.3",
         "laravel/framework": "^7.0",
+        "laravel/helpers": "^1.2",
         "laravel/tinker": "^2.0"
     },
     "require-dev": {
+        "backpack/generators": "^2.0",
+        "barryvdh/laravel-debugbar": "^3.2",
+        "barryvdh/laravel-ide-helper": "^2.6",
         "facade/ignition": "^2.0",
         "fzaninotto/faker": "^1.9.1",
         "laravel/ui": "^2.0",
