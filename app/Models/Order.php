@@ -143,11 +143,9 @@ class Order extends Model
      */
     public function total()
     {
-        $var = decimalFormat($this->products->sum(function ($product) {
+        return decimalFormat($this->products->sum( function ($product) {
                 return $product->pivot->price_with_tax * $product->pivot->quantity;
             }, 0) + $this->carrier->price);
-
-        return $var;
     }
 
     /**
