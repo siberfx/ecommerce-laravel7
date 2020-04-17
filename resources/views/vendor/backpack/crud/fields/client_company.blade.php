@@ -24,7 +24,7 @@
         </div>
         <div id="add-company-fields">
             <div class="modal-body">
-              <input type="hidden" name="company[client_id]" value="{{ $entry->id }}">
+              <input type="hidden" name="company[client_id]" value="{{ $entry->id ?? '' }}">
 
               <div class="form-group">
                 <label for="name">{{ trans('company.company_name') }}:</label>
@@ -134,7 +134,7 @@
                 $('.add-company-modal').modal('hide');
 
                 // Reload client companies
-                getClientCompanies({{ $entry->id }});
+                getClientCompanies({{ $entry->id ?? '' }});
 
                 // Show success message
                 $(function(){
@@ -175,7 +175,7 @@
                 })
                 .done(function() {
                     // Reload client companies
-                    getClientCompanies({{ $entry->id }});
+                    getClientCompanies({{ $entry->id ?? '' }});
 
                     // Show success message
                     $(function(){
@@ -202,7 +202,7 @@
 
         $(document).ready(function () {
             // List client companies
-            getClientCompanies({{ $entry->id }});
+            getClientCompanies({{ $entry->id ?? '' }});
         });
     </script>
 @endpush

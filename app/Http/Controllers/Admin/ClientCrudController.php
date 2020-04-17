@@ -2,39 +2,99 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\UserRequest as ClientRequest;
+use App\Http\Requests\UserStoreRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
+use Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
+use Backpack\CRUD\app\Library\CrudPanel\CrudPanel;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Backpack\PermissionManager\app\Http\Requests\UserUpdateCrudRequest;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 
 /**
  * Class ClientCrudController
  * @package App\Http\Controllers\Admin
- * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
+ * @property-read CrudPanel $crud
  */
 class ClientCrudController extends CrudController
 {
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+    use ListOperation;
+    use CreateOperation { store as traitStore; }
+    use UpdateOperation { update as traitUpdate; }
+    use DeleteOperation;
+    use ShowOperation;
 
     public function setup()
     {
         $this->crud->setModel('App\Models\User');
         $this->crud->setRoute(config('backpack.base.route_prefix') . '/clients');
         $this->crud->setEntityNameStrings('client', 'clients');
+
+        $this->crud->addColumns(
+            $this->getColumns()
+        );
+        $this->crud->addFields(
+            $this->getFields()
+        );
+
+        $this->crud->addField([
+            'name'          => 'client_address',
+            'type'          => 'client_address',
+            'country_model' => 'App\Models\Country',
+
+            'tab'           => __('client.tab_address'),
+        ], 'update');
+
+        $this->crud->addField([
+            'name'          => 'client_company',
+            'type'          => 'client_company',
+            'country_model' => 'App\Models\Company',
+
+            'tab'           => __('client.tab_company'),
+        ], 'update');
+    }
+
+
+    protected function setupListOperation()
+    {
         $this->crud->addClause('whereHas', 'roles', function ($query) {
             $clientRoleName = env('CLIENT_ROLE_NAME');
             $query->whereName($clientRoleName ?: 'client');
         });
+    }
 
-        /*
-        |--------------------------------------------------------------------------
-        | COLUMNS
-        |--------------------------------------------------------------------------
-        */
-        $this->crud->addColumns([
+
+    public function store(UserStoreRequest $request)
+    {
+
+        $request->request->set('password' , bcrypt($this->crud->request->input('password')));
+
+        $response = $this->traitUpdate();
+        // $clientRoleID = \DB::table('roles')->whereName($clientRoleName ?: 'client')->first()->id;
+        // $this->crud->entry->roles()->attach($clientRoleID);
+
+        return $response;
+    }
+
+    public function update(UserUpdateCrudRequest $request)
+    {
+        $request->request->set('password' , bcrypt($this->crud->request->input('password')));
+
+        $response = $this->traitStore();
+
+        return $response;
+    }
+
+    /**
+     * @return array
+     */
+    private function getColumns()
+    {
+        return [
             [
                 'name'        => 'salutation',
                 'label'       => __('client.salutation'),
@@ -65,23 +125,15 @@ class ClientCrudController extends CrudController
                     1 => __('common.active'),
                 ],
             ]
-
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | FIELDS
-        |--------------------------------------------------------------------------
-        */
-        $this->setFields();
-
-
-
+        ];
     }
 
-    public function setFields()
+    /**
+     * @return array
+     */
+    private function getFields()
     {
-        $this->crud->addFields([
+        return [
             [
                 'name'  => 'salutation',
                 'label' => __('client.salutation'),
@@ -159,7 +211,7 @@ class ClientCrudController extends CrudController
                         'entity'           => 'roles',
                         'entity_secondary' => 'permissions',
                         'attribute'        => 'name',
-                        'model'            => config('laravel-permission.models.role'),
+                        'model'            => config('permission.models.role'),
                         'pivot'            => true,
                         'number_columns'   => 3, //can be 1,2,3,4,6
                     ],
@@ -177,41 +229,7 @@ class ClientCrudController extends CrudController
 
                 'tab'   => __('client.tab_permissions'),
             ],
-        ]);
-
-        $this->crud->addField([
-            'name'          => 'client_address',
-            'type'          => 'client_address',
-            'country_model' => Country::class,
-
-            'tab'           => __('client.tab_address'),
-        ], 'update');
-
-        $this->crud->addField([
-            'name'          => 'client_company',
-            'type'          => 'client_company',
-            'country_model' => 'App\Models\Company',
-
-            'tab'           => __('client.tab_company'),
-        ], 'update');
+        ];
     }
 
-
-    /**
-     * Handle password input fields.
-     *
-     * @param CrudRequest $request
-     */
-    protected function handlePasswordInput(CrudRequest $request)
-    {
-        // Remove fields not present on the user.
-        $request->request->remove('password_confirmation');
-
-        // Encrypt password if specified.
-        if ($request->input('password')) {
-            $request->request->set('password', bcrypt($request->input('password')));
-        } else {
-            $request->request->remove('password');
-        }
-    }
 }

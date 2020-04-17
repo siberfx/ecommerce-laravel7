@@ -24,7 +24,7 @@
         </div>
         <div id="add-address-fields">
             <div class="modal-body">
-              <input type="hidden" name="address[client_id]" value="{{ $entry->id }}">
+              <input type="hidden" name="address[client_id]" value="{{ $entry->id ?? '' }}">
 
               <div class="form-group">
                 <label for="name">{{ trans('address.contact_person') }}:</label>
@@ -153,7 +153,7 @@
                 $('.add-address-modal').modal('hide');
 
                 // Reload client addresses
-                getClientAddresses({{ $entry->id }});
+                getClientAddresses({{ $entry->id ?? '' }});
 
                 // Show success message
                 $(function(){
@@ -194,7 +194,7 @@
                 })
                 .done(function() {
                     // Reload client addresses
-                    getClientAddresses({{ $entry->id }});
+                    getClientAddresses({{ $entry->id ?? '' }});
 
                     // Show success message
                     $(function(){
@@ -221,7 +221,7 @@
 
         $(document).ready(function () {
             // List client addresses
-            getClientAddresses({{ $entry->id }});
+            getClientAddresses({{ $entry->id ?? '' }});
         });
     </script>
 @endpush

@@ -6,20 +6,28 @@ use App\Http\Requests\AttributeRequest;
 use App\Http\Requests\AttributeUpdateRequest;
 use App\Models\AttributeValue;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
+use Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
+use Backpack\CRUD\app\Library\CrudPanel\CrudPanel;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Image;
+use Storage;
 
 /**
  * Class AttributeCrudController
  * @package App\Http\Controllers\Admin
- * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
+ * @property-read CrudPanel $crud
  */
 class AttributeCrudController extends CrudController
 {
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation { store as traitStore; }
-    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation { update as traitUpdate; }
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+    use ListOperation;
+    use CreateOperation { store as traitStore; }
+    use UpdateOperation { update as traitUpdate; }
+    use DeleteOperation;
+    use ShowOperation;
 
     public function setup()
     {
@@ -80,11 +88,11 @@ class AttributeCrudController extends CrudController
             case 'media':
                 if (starts_with($request->media, 'data:image')) {
                     // 1. Make the image
-                    $image = \Image::make($request->media);
+                    $image = Image::make($request->media);
                     // 2. Generate a filename.
                     $filename = md5($request->media.time()).'.jpg';
                     // 3. Store the image on disk.
-                    \Storage::disk($disk)->put($filename, $image->stream());
+                    Storage::disk($disk)->put($filename, $image->stream());
                     // 4. Save the path to attributes_value
                     $attributeValue = ['attribute_id' => $entryId, 'value' => $filename];
                 }
@@ -130,15 +138,15 @@ class AttributeCrudController extends CrudController
                     // 0. Get current image filename
                     $current_image_filename = $attributeValue->where('attribute_id', $request->id)->first()->value;
                     // 1. delete image file if exist
-                    if (\Storage::disk($disk)->has($current_image_filename)) {
-                        \Storage::disk($disk)->delete($current_image_filename);
+                    if (Storage::disk($disk)->has($current_image_filename)) {
+                        Storage::disk($disk)->delete($current_image_filename);
                     }
                     // 2. Make the image
-                    $image = \Image::make($request->media);
+                    $image = Image::make($request->media);
                     // 3. Generate a filename.
                     $filename = md5($request->media.time()).'.jpg';
                     // 4. Store the image on disk.
-                    \Storage::disk($disk)->put($filename, $image->stream());
+                    Storage::disk($disk)->put($filename, $image->stream());
                     // 5. Update image filename to attributes_value
                     $attributeValue->where('attribute_id', $request->id)->update(['value' => $filename]);
                 }
