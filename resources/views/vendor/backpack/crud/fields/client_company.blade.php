@@ -80,13 +80,13 @@
 
 @push('crud_fields_styles')
     <!-- include select2 css-->
-    <link href="{{ asset('packages/select2/dist/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('packages/select2/dist/js/select2.min.js') }}" rel="stylesheet" type="text/css" />
     <!-- Select 2 Bootstrap theme -->
-    <link href="{{ asset('css/select2-bootstrap-min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('packages/select2-bootstrap-theme/dist/select2-bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
 @endpush
 
 @push('crud_fields_scripts')
-    <script src="{{ asset('vendor/adminlte/plugins/select2/select2.min.js') }}"></script>
+    <script src="{{ asset('packages/select2/dist/js/select2.min.js') }}"></script>
     <script>
 
         // List client companies
@@ -104,7 +104,7 @@
             .fail(function(resp) {
                 // Show error message
                 $(function(){
-                  new PNotify({
+                  swal({
                     text: '{{ trans('common.error_occurred') }}',
                     type: 'error',
                     icon: false
@@ -138,7 +138,7 @@
 
                 // Show success message
                 $(function(){
-                  new PNotify({
+                  swal({
                     text: '{{ trans('company.company_created') }}',
                     type: 'success',
                     icon: false
@@ -151,7 +151,7 @@
 
                 // Show error message
                 $(function(){
-                  new PNotify({
+                  swal({
                     text: '{{ trans('common.error_occurred') }}',
                     type: 'error',
                     icon: false
@@ -179,7 +179,7 @@
 
                     // Show success message
                     $(function(){
-                      new PNotify({
+                      swal({
                         text: '{{ trans('company.company_deleted') }}',
                         type: 'success',
                         icon: false
@@ -189,7 +189,7 @@
                 .fail(function() {
                     // Show error message
                     $(function(){
-                      new PNotify({
+                      swal({
                         text: '{{ trans('common.error_occurred') }}',
                         type: 'error',
                         icon: false

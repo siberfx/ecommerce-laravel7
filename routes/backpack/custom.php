@@ -38,9 +38,9 @@ Route::group([
     Route::post('attribute-sets/list-attributes', 'AttributeSetCrudController@ajaxGetAttributesBySetId')->name('getAttrBySetId');
 
     // Product images upload routes
-    Route::post('product/image/upload', 'ProductCrudController@ajaxUploadProductImages')->name('uploadProductImages');
-    Route::post('product/image/reorder', 'ProductCrudController@ajaxReorderProductImages')->name('reorderProductImages');
-    Route::post('product/image/delete', 'ProductCrudController@ajaxDeleteProductImage')->name('deleteProductImage');
+    Route::post('products/image/upload', 'ProductCrudController@ajaxUploadProductImages')->name('uploadProductImages');
+    Route::post('products/image/reorder', 'ProductCrudController@ajaxReorderProductImages')->name('reorderProductImages');
+    Route::post('products/image/delete', 'ProductCrudController@ajaxDeleteProductImage')->name('deleteProductImage');
 
     // Get group products by group id
     Route::post('product-group/list/products', 'ProductGroupController@getGroupProducts')->name('getGroupProducts');
@@ -49,14 +49,14 @@ Route::group([
     Route::post('product-group/remove/product', 'ProductGroupController@removeProductFromGroup')->name('removeProductFromGroup');
 
     // Client address
-    Route::post('client/list/addresses', 'ClientAddressController@getClientAddresses')->name('getClientAddresses');
-    Route::post('client/add/address', 'ClientAddressController@addClientAddress')->name('addClientAddress');
-    Route::post('client/delete/address', 'ClientAddressController@deleteClientAddress')->name('deleteClientAddress');
+    Route::post('clients/list/addresses', 'ClientAddressController@getClientAddresses')->name('getClientAddresses');
+    Route::post('clients/add/address', 'ClientAddressController@addClientAddress')->name('addClientAddress');
+    Route::post('clients/delete/address', 'ClientAddressController@deleteClientAddress')->name('deleteClientAddress');
 
     // Client company
-    Route::post('client/list/companies', 'ClientCompanyController@getClientCompanies')->name('getClientCompanies');
-    Route::post('client/add/company', 'ClientCompanyController@addClientCompany')->name('addClientCompany');
-    Route::post('client/delete/company', 'ClientCompanyController@deleteClientCompany')->name('deleteClientCompany');
+    Route::post('clients/list/companies', 'ClientCompanyController@getClientCompanies')->name('getClientCompanies');
+    Route::post('clients/add/company', 'ClientCompanyController@addClientCompany')->name('addClientCompany');
+    Route::post('clients/delete/company', 'ClientCompanyController@deleteClientCompany')->name('deleteClientCompany');
 
     // Notification templates
     Route::post('notification-templates/list-model-variables', 'NotificationTemplateCrudController@listModelVars')->name('listModelVars');
