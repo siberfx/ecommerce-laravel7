@@ -3,45 +3,100 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\CategoryRequest;
+use App\Models\Category;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
+use Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
+use Backpack\CRUD\app\Library\CrudPanel\CrudPanel;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 /**
  * Class CategoryCrudController
  * @package App\Http\Controllers\Admin
- * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
+ * @property-read CrudPanel $crud
  */
 class CategoryCrudController extends CrudController
 {
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+    use ListOperation;
+    use CreateOperation;
+    use UpdateOperation;
+    use DeleteOperation;
+    use ShowOperation;
 
     public function setup()
     {
         $this->crud->setModel('App\Models\Category');
-        $this->crud->setRoute(config('backpack.base.route_prefix') . '/category');
-        $this->crud->setEntityNameStrings('category', 'categories');
+        $this->crud->setRoute(config('backpack.base.route_prefix') . '/categories');
+        $this->crud->setEntityNameStrings('Category', 'Categories');
+
+        $this->crud->addColumns(
+            $this->getColumns()
+        );
+        $this->crud->addFields(
+            $this->getFields()
+        );
+
     }
 
     protected function setupListOperation()
     {
-        // TODO: remove setFromDb() and manually define Columns, maybe Filters
-        $this->crud->setFromDb();
     }
 
     protected function setupCreateOperation()
     {
         $this->crud->setValidation(CategoryRequest::class);
-
-        // TODO: remove setFromDb() and manually define Fields
-        $this->crud->setFromDb();
     }
 
     protected function setupUpdateOperation()
     {
-        $this->setupCreateOperation();
+        $this->crud->setValidation(CategoryRequest::class);
+
+    }
+
+    /**
+     * @return array
+     */
+    private function getColumns()
+    {
+        return [
+            [
+                'type'      => "select",
+                'label'     => __('category.parent'),
+                'name'      => 'parent_id',
+                'entity'    => 'parent',
+                'attribute' => "name",
+                'model'     => Category::class,
+            ],
+            [
+                'name'  => 'name',
+                'label' => __('category.name'),
+            ],
+            [
+                'name'  => 'slug',
+                'label' => __('category.slug'),
+            ]
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    private function getFields()
+    {
+        return [
+            [
+                'name'  => 'name',
+                'label' => __('category.name'),
+                'type'  => 'text',
+            ],
+            [
+                'name'  => 'slug',
+                'label' => __('category.slug'),
+                'type'  => 'text',
+            ]
+        ];
     }
 }

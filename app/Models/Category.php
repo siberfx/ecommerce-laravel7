@@ -60,7 +60,7 @@ class Category extends Model
      */
 	public function parent()
     {
-        return $this->belongsTo('App\Models\Category', 'parent_id');
+        return $this->belongsTo(Category::class, 'parent_id');
     }
 
     /**
@@ -68,7 +68,7 @@ class Category extends Model
      */
     public function children()
     {
-        return $this->hasMany('App\Models\Category', 'parent_id');
+        return $this->hasMany(Category::class, 'parent_id');
     }
 
     /**
@@ -76,7 +76,7 @@ class Category extends Model
      */
     public function cartRules()
     {
-        return $this->belongsToMany('App\Models\CartRule');
+        return $this->belongsToMany(CartRule::class);
     }
 
 }
