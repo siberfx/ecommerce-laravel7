@@ -26,7 +26,18 @@ class CartRuleRequest extends FormRequest
     public function rules()
     {
         return [
-            // 'name' => 'required|min:5|max:255'
+            'name'                      => 'required|min:5|max:255',
+            'code'                      => 'required|min:5|max:255',
+            'priority'                  => 'required|numeric',
+            'start_date'                => 'required|date',
+            'expiration_date'           => 'required|date',
+            'promo_label'               => 'max:255',
+            'promo_text'                => 'max:1000',
+            'multiply_gift'             => 'numeric',
+            'min_nr_products'           => 'numeric',
+            'reduction_amount'          => 'numeric',
+            'total_available'           => 'numeric',
+            'total_available_each_user' => 'numeric',
         ];
     }
 

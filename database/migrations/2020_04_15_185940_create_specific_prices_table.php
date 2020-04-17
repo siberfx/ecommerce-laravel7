@@ -16,7 +16,7 @@ class CreateSpecificPricesTable extends Migration
         Schema::create('specific_prices', function (Blueprint $table) {
             $table->id();
             $table->decimal('reduction', 13, 2)->nullable()->default(0);
-            $table->enum('discount_type', ['Amount', 'Percent']);
+            $table->bigInteger('discount_type');
             $table->dateTime('start_date');
             $table->dateTime('expiration_date');
             $table->unsignedBigInteger('product_id')->nullable();

@@ -22,17 +22,15 @@ class CreateCartRulesTable extends Migration
             $table->dateTime('expiration_date');
             $table->boolean('status')->default(0);
             $table->boolean('highlight')->default(0);
-            $table->integer('minimum_amount')->nullable()->default(0);
+            $table->bigInteger('minimum_amount')->nullable()->default(0);
             $table->boolean('free_delivery')->default(0);
-            $table->integer('total_available')->nullable();
-            $table->integer('total_available_each_user')->nullable();
+            $table->bigInteger('total_available')->nullable();
+            $table->bigInteger('total_available_each_user')->nullable();
             $table->string('promo_label', 255)->nullable();
             $table->string('promo_text', 1000)->nullable();
-            $table->integer('multiply_gift')->nullable()->default(1);
-            $table->integer('min_nr_products')->nullable()->default(0);
-            $table->enum('discount_type', ['Percent - order',
-                'Percent - selected products', 'Percent - cheapest product',
-                'Percent - most expensive product', 'Amount - order']);
+            $table->bigInteger('multiply_gift')->nullable()->default(1);
+            $table->bigInteger('min_nr_products')->nullable()->default(0);
+            $table->bigInteger('discount_type');
             $table->decimal('reduction_amount', 13, 2)->nullable()->default(0);
             $table->bigInteger('reduction_currency_id')->unsigned()->nullable();
             $table->bigInteger('minimum_amount_currency_id')->unsigned()->nullable();
