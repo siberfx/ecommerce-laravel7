@@ -26,7 +26,14 @@ class AttributeRequest extends FormRequest
     public function rules()
     {
         return [
-            // 'name' => 'required|min:5|max:255'
+            'name'     => 'required|min:1|max:50',
+            'type'     => 'not_in:0',
+            'option'   => 'required_if:type,dropdown,multiple_select',
+            'option.*' => 'required_if:type,dropdown,multiple_select|min:1',
+            'text'     => 'required_if:type,text',
+            'textarea' => 'required_if:type,textarea',
+            'date'     => 'required_if:type,date',
+            'media'    => 'required_if:type,media',
         ];
     }
 
@@ -37,9 +44,15 @@ class AttributeRequest extends FormRequest
      */
     public function attributes()
     {
-        return [
-            //
-        ];
+        $attributes = [];
+
+        if (isset($this->option)) {
+            foreach ($this->option as $key => $option) {
+                $attributes['option.'.$key] = "Option #".($key);
+            }
+        }
+
+        return $attributes;
     }
 
     /**

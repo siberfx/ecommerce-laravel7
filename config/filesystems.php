@@ -55,6 +55,30 @@ return [
             'visibility' => 'public',
         ],
 
+        'uploads' => [
+            'driver' => 'local',
+            'root'   => public_path('uploads'),
+        ],
+
+        'attributes' => [
+            'driver'      => 'local',
+            'simple_path' => 'uploads/attributes',
+            'root'        => public_path('uploads/attributes'),
+        ],
+
+        'products'  => [
+            'driver'      => 'local',
+            'simple_path' => 'uploads/products',
+            'root'        => public_path('uploads/products'),
+        ],
+
+        'carriers'  => [
+            'driver'      => 'local',
+            'simple_path' => 'uploads/carriers',
+            'root'        => public_path('uploads/carriers')
+        ],
+
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
@@ -64,7 +88,6 @@ return [
             'url' => env('AWS_URL'),
             'endpoint' => env('AWS_ENDPOINT'),
         ],
-
     ],
 
     /*
