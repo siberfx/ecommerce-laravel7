@@ -10,7 +10,7 @@
 
 <div class="row">
 	<div class="col-md-12">
-		<h3>{{ trans('product.add_product_to_group') }}</h3>
+		<h3>{{ __('product.add_product_to_group') }}</h3>
 		<div id="ungrouped_products"></div>
 	</div>
 </div>
@@ -34,7 +34,7 @@
 			})
 			.fail(function() {
 				$(function(){
-	              new PNotify({
+                    swal({
 	                text: '{{ trans('common.error_occurred') }}',
 	                type: 'error',
 	                icon: false
@@ -65,7 +65,7 @@
 			})
 			.fail(function(error) {
 				$(function(){
-	              new PNotify({
+                    swal({
 	                text: '{{ trans('common.error_occurred') }}',
 	                type: 'error',
 	                icon: false
@@ -94,7 +94,7 @@
 			})
 			.fail(function() {
 				$(function(){
-	              new PNotify({
+                    swal({
 	                text: '{{ trans('common.error_occurred') }}',
 	                type: 'error',
 	                icon: false
@@ -128,7 +128,7 @@
 				})
 				.fail(function() {
 					$(function(){
-		              new PNotify({
+                        swal({
 	                	text: '{{ trans('common.error_occurred') }}',
 		                type: 'error',
 		                icon: false

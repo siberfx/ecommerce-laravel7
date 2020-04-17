@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Http\Requests\Request;
+use App\Models\Attribute;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ProductRequest extends FormRequest
@@ -26,7 +27,16 @@ class ProductRequest extends FormRequest
     public function rules()
     {
         return [
-            // 'name' => 'required|min:5|max:255'
+            'name'              => 'required|max:255',
+            'description'       => 'required|min:3',
+            'price'             => 'required|numeric|between:0,9999999999999.999999',
+            'categories'        => 'required',
+            'sku'               => 'required|unique:products,sku'.($this->request->get('id') ? ','.$this->request->get('id') : ''),
+            'stock'             => 'required|numeric',
+            'active'            => 'required|numeric|between:0,1',
+            'attribute_set_id' => 'required',
+            'attributes'        => 'sometimes|required',
+            'attributes.*'      => 'sometimes|required'
         ];
     }
 
@@ -37,9 +47,15 @@ class ProductRequest extends FormRequest
      */
     public function attributes()
     {
-        return [
-            //
-        ];
+        $attributes = [];
+
+        if ($this->input('attributes')) {
+            foreach ($this->input('attributes') as $key => $option) {
+                $attributes['attributes.'.$key] = strtolower(trans('attribute.attribute'))." \"".Attribute::find($key)->name."\"";
+            }
+        }
+
+        return $attributes;
     }
 
     /**

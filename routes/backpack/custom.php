@@ -29,34 +29,35 @@ Route::group([
 
 
 // Ajax
-Route::group(['middleware' => 'admin',
+Route::group([
+    'middleware' => ['web', config('backpack.base.middleware_key', 'admin')],
     'prefix' => 'ajax',
-    'namespace' => 'Admin'
+    'namespace'  => 'App\Http\Controllers\Admin',
 ], function() {
     // Get attributes by set id
-    Route::post('attribute-sets/list-attributes', ['as' => 'getAttrBySetId', 'uses' => 'AttributeSetCrudController@ajaxGetAttributesBySetId']);
+    Route::post('attribute-sets/list-attributes', 'AttributeSetCrudController@ajaxGetAttributesBySetId')->name('getAttrBySetId');
 
     // Product images upload routes
-    Route::post('product/image/upload', ['as' => 'uploadProductImages', 'uses' => 'ProductCrudController@ajaxUploadProductImages']);
-    Route::post('product/image/reorder', ['as' => 'reorderProductImages', 'uses' => 'ProductCrudController@ajaxReorderProductImages']);
-    Route::post('product/image/delete', ['as' => 'deleteProductImage', 'uses' => 'ProductCrudController@ajaxDeleteProductImage']);
+    Route::post('product/image/upload', 'ProductCrudController@ajaxUploadProductImages')->name('uploadProductImages');
+    Route::post('product/image/reorder', 'ProductCrudController@ajaxReorderProductImages')->name('reorderProductImages');
+    Route::post('product/image/delete', 'ProductCrudController@ajaxDeleteProductImage')->name('deleteProductImage');
 
     // Get group products by group id
-    Route::post('product-group/list/products', ['as' => 'getGroupProducts', 'uses' => 'ProductGroupController@getGroupProducts']);
-    Route::post('product-group/list/ungrouped-products', ['as' => 'getUngroupedProducts', 'uses' => 'ProductGroupController@getUngroupedProducts']);
-    Route::post('product-group/add/product', ['as' => 'addProductToGroup', 'uses' => 'ProductGroupController@addProductToGroup']);
-    Route::post('product-group/remove/product', ['as' => 'removeProductFromGroup', 'uses' => 'ProductGroupController@removeProductFromGroup']);
+    Route::post('product-group/list/products', 'ProductGroupController@getGroupProducts')->name('getGroupProducts');
+    Route::post('product-group/list/ungrouped-products', 'ProductGroupController@getUngroupedProducts')->name('getUngroupedProducts');
+    Route::post('product-group/add/product', 'ProductGroupController@addProductToGroup')->name('addProductToGroup');
+    Route::post('product-group/remove/product', 'ProductGroupController@removeProductFromGroup')->name('removeProductFromGroup');
 
     // Client address
-    Route::post('client/list/addresses', ['as' => 'getClientAddresses', 'uses' => 'ClientAddressController@getClientAddresses']);
-    Route::post('client/add/address', ['as' => 'addClientAddress', 'uses' => 'ClientAddressController@addClientAddress']);
-    Route::post('client/delete/address', ['as' => 'deleteClientAddress', 'uses' => 'ClientAddressController@deleteClientAddress']);
+    Route::post('client/list/addresses', 'ClientAddressController@getClientAddresses')->name('getClientAddresses');
+    Route::post('client/add/address', 'ClientAddressController@addClientAddress')->name('addClientAddress');
+    Route::post('client/delete/address', 'ClientAddressController@deleteClientAddress')->name('deleteClientAddress');
 
     // Client company
-    Route::post('client/list/companies', ['as' => 'getClientCompanies', 'uses' => 'ClientCompanyController@getClientCompanies']);
-    Route::post('client/add/company', ['as' => 'addClientCompany', 'uses' => 'ClientCompanyController@addClientCompany']);
-    Route::post('client/delete/company', ['as' => 'deleteClientCompany', 'uses' => 'ClientCompanyController@deleteClientCompany']);
+    Route::post('client/list/companies', 'ClientCompanyController@getClientCompanies')->name('getClientCompanies');
+    Route::post('client/add/company', 'ClientCompanyController@addClientCompany')->name('addClientCompany');
+    Route::post('client/delete/company', 'ClientCompanyController@deleteClientCompany')->name('deleteClientCompany');
 
     // Notification templates
-    Route::post('notification-templates/list-model-variables', ['as' => 'listModelVars', 'uses' => 'NotificationTemplateCrudController@listModelVars']);
+    Route::post('notification-templates/list-model-variables', 'NotificationTemplateCrudController@listModelVars')->name('listModelVars');
 });

@@ -125,7 +125,7 @@ class Product extends Model
      */
 	public function tax()
 	{
-		return $this->hasOne(Tax::class);
+		return $this->hasOne(Tax::class, 'id', 'tax_id');
 	}
 
     /**
