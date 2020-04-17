@@ -12,13 +12,13 @@ use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanel;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Backpack\PermissionManager\app\Http\Requests\UserUpdateCrudRequest;
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Request;
 
 /**
  * Class ClientCrudController
  * @package App\Http\Controllers\Admin
  * @property-read CrudPanel $crud
+ *
+ * @todo create or update has problem because of password confirmation issue
  */
 class ClientCrudController extends CrudController
 {
@@ -58,7 +58,6 @@ class ClientCrudController extends CrudController
         ], 'update');
     }
 
-
     protected function setupListOperation()
     {
         $this->crud->addClause('whereHas', 'roles', function ($query) {
@@ -66,7 +65,6 @@ class ClientCrudController extends CrudController
             $query->whereName($clientRoleName ?: 'client');
         });
     }
-
 
     public function store(UserStoreRequest $request)
     {
