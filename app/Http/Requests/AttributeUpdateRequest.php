@@ -13,7 +13,7 @@ class AttributeUpdateRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return backpack_auth()->check();
     }
 
     /**
@@ -24,7 +24,16 @@ class AttributeUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name'             => 'required|min:1|max:50',
+            'type'             => 'not_in:0',
+            'current_option'   => 'sometimes|required_if:type,dropdown,multiple_select',
+            'current_option.*' => 'sometimes|required_if:type,dropdown,multiple_select|min:1',
+            'option'           => 'sometimes|required_if:type,dropdown,multiple_select',
+            'option.*'         => 'sometimes|required_if:type,dropdown,multiple_select|min:1',
+            'text'             => 'required_if:type,text',
+            'textarea'         => 'required_if:type,textarea',
+            'date'             => 'required_if:type,date',
+            'media'            => 'required_if:type,media',
         ];
     }
 
@@ -35,9 +44,21 @@ class AttributeUpdateRequest extends FormRequest
      */
     public function attributes()
     {
-        return [
-            //
-        ];
+        $attributes = [];
+
+        if (isset($this->option)) {
+            foreach ($this->option as $key => $option) {
+                $attributes['option.'.$key] = "Option #".($key);
+            }
+        }
+
+        if (isset($this->current_option)) {
+            foreach ($this->current_option as $key => $current_option) {
+                $attributes['current_option.'.$key] = "Option #".($key);
+            }
+        }
+
+        return $attributes;
     }
 
     /**

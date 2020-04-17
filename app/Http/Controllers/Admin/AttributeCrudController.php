@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\AttributeRequest;
+use App\Http\Requests\AttributeUpdateRequest;
 use App\Models\AttributeValue;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
@@ -95,7 +96,7 @@ class AttributeCrudController extends CrudController
         return $response;
     }
 
-    public function update(AttributeRequest $request, AttributeValue $attributeValue)
+    public function update(AttributeUpdateRequest $request, AttributeValue $attributeValue)
     {
         // Define Storage disk for media attribute type
         $disk = 'attributes';
