@@ -41,21 +41,27 @@ class ClientCrudController extends CrudController
             $this->getFields()
         );
 
-        $this->crud->addField([
-            'name'          => 'client_address',
-            'type'          => 'client_address',
-            'country_model' => 'App\Models\Country',
+        if ( request()->segment(4) === 'edit' ) {
 
-            'tab'           => __('client.tab_address'),
-        ], 'update');
+            $this->crud->addFields([
+                [
+                    'name'          => 'client_address',
+                    'type'          => 'client_address',
+                    'country_model' => 'App\Models\Country',
 
-        $this->crud->addField([
-            'name'          => 'client_company',
-            'type'          => 'client_company',
-            'country_model' => 'App\Models\Company',
+                    'tab'           => __('client.tab_address'),
+                ],
+                [
+                    'name'          => 'client_company',
+                    'type'          => 'client_company',
+                    'country_model' => 'App\Models\Company',
 
-            'tab'           => __('client.tab_company'),
-        ], 'update');
+                    'tab'           => __('client.tab_company'),
+                ],
+            ]);
+
+        }
+
     }
 
     protected function setupListOperation()
