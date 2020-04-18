@@ -22,26 +22,68 @@ class TaxCrudController extends CrudController
     public function setup()
     {
         $this->crud->setModel('App\Models\Tax');
-        $this->crud->setRoute(config('backpack.base.route_prefix') . '/tax');
+        $this->crud->setRoute(config('backpack.base.route_prefix') . '/taxes');
         $this->crud->setEntityNameStrings('tax', 'taxes');
+
+        $this->crud->addColumns(
+            $this->getColumns()
+        );
+        $this->crud->addFields(
+            $this->getFields()
+        );
+
     }
+
 
     protected function setupListOperation()
     {
-        // TODO: remove setFromDb() and manually define Columns, maybe Filters
-        $this->crud->setFromDb();
     }
 
     protected function setupCreateOperation()
     {
         $this->crud->setValidation(TaxRequest::class);
-
-        // TODO: remove setFromDb() and manually define Fields
-        $this->crud->setFromDb();
     }
 
     protected function setupUpdateOperation()
     {
-        $this->setupCreateOperation();
+        $this->crud->setValidation(TaxRequest::class);
+
+    }
+
+    /**
+     * @return array
+     */
+    private function getColumns()
+    {
+        return [
+            [
+                'name'  => 'name',
+                'label' => __('tax.name'),
+            ],
+            [
+                'name'  => 'value',
+                'label' => __('tax.value'),
+            ]
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    private function getFields()
+    {
+        return [
+            [
+                'name'  => 'name',
+                'label' => __('tax.name'),
+                'type'  => 'text',
+            ],
+            [
+                'name'  => 'value',
+                'label' => __('tax.value'),
+                'hint'  => __('tax.hint_value'),
+                'type'  => 'text',
+            ]
+        ];
     }
 }
