@@ -32,7 +32,7 @@ class AttributeCrudController extends CrudController
     public function setup()
     {
         $this->crud->setModel('App\Models\Attribute');
-        $this->crud->setRoute(config('backpack.base.route_prefix') . '/attribute');
+        $this->crud->setRoute(config('backpack.base.route_prefix') . '/attributes');
         $this->crud->setEntityNameStrings('attribute', 'attributes');
 
         $this->crud->addColumns(
@@ -106,6 +106,7 @@ class AttributeCrudController extends CrudController
 
     public function update(AttributeUpdateRequest $request, AttributeValue $attributeValue)
     {
+
         // Define Storage disk for media attribute type
         $disk = 'attributes';
 
@@ -152,13 +153,14 @@ class AttributeCrudController extends CrudController
                 }
                 break;
 
-                $response = $this->traitUpdate();
-                return $response;
+
         }
 
+        $response = $this->traitUpdate();
+
+        return $response;
+
     }
-
-
 
 
     /**

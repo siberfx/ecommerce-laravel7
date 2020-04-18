@@ -58,9 +58,7 @@
             .hide {
                 display: none;
             }
-            .btn-group {
-                margin-top: 10px;
-            }
+
             img {
                 max-width: 100%; /* This rule is very important, please do not ignore this! */
             }
@@ -151,6 +149,7 @@
                             $reset.hide();
                             $remove.hide();
                         });
+
                     } else {
 
                         $(this).find("#remove").click(function() {

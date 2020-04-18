@@ -14,7 +14,7 @@ Route::group([
     Route::crud('categories', 'CategoryCrudController');
     Route::crud('currencies', 'CurrencyCrudController');
     Route::crud('carriers', 'CarrierCrudController');
-    Route::crud('attribute', 'AttributeCrudController');
+    Route::crud('attributes', 'AttributeCrudController');
     Route::crud('attributes-sets', 'AttributeSetCrudController');
     Route::crud('products', 'ProductCrudController');
     Route::crud('taxes', 'TaxCrudController');
