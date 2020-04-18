@@ -64,6 +64,7 @@ class ClientCrudController extends CrudController
             $clientRoleName = env('CLIENT_ROLE_NAME');
             $query->whereName($clientRoleName ?: 'client');
         });
+
     }
 
     public function store(UserStoreRequest $request)
@@ -71,7 +72,7 @@ class ClientCrudController extends CrudController
 
         $request->request->set('password' , bcrypt($this->crud->request->input('password')));
 
-        $response = $this->traitUpdate();
+        $response = $this->traitStore();
         // $clientRoleID = \DB::table('roles')->whereName($clientRoleName ?: 'client')->first()->id;
         // $this->crud->entry->roles()->attach($clientRoleID);
 
@@ -82,7 +83,7 @@ class ClientCrudController extends CrudController
     {
         $request->request->set('password' , bcrypt($this->crud->request->input('password')));
 
-        $response = $this->traitStore();
+        $response = $this->traitUpdate();
 
         return $response;
     }

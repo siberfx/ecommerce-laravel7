@@ -1,11 +1,11 @@
 @if (count($addresses) > 0)
-	<table class="table table-striped" >
+	<table class="table table-dashed" >
 		<thead>
-			<th>{{ trans('address.contact_person') }}</th>
-			<th>{{ trans('address.address') }}</th>
-			<th>{{ trans('address.mobile_phone') }}</th>
-			<th>{{ trans('address.comment') }}</th>
-			<th>{{ trans('common.actions') }}</th>
+			<th>{{ __('address.contact_person') }}</th>
+			<th>{{ __('address.address') }}</th>
+			<th>{{ __('address.mobile_phone') }}</th>
+			<th>{{ __('address.comment') }}</th>
+			<th>{{ __('common.actions') }}</th>
 		</thead>
 		<tbody>
 			@foreach ($addresses as $address)
@@ -20,7 +20,7 @@
 					<td class="vertical-align-middle">{{ $address->comment }}</td>
 					<td class="vertical-align-middle">
 						<a href="javascript:void(0)" data-address-id="{{ $address->id }}" class="btn btn-xs btn-default btn-delete-address">
-							<i class="fa fa-trash"></i> {{ trans('common.delete') }}
+							<i class="fa fa-trash"></i> {{ __('common.delete') }}
 						</a>
 					</td>
 				</tr>
@@ -29,6 +29,6 @@
 	</table>
 @else
 	<div class="alert alert-info">
-		{{ trans('address.no_addresses') }}
+		{{ __('address.no_addresses') }}
 	</div>
 @endif

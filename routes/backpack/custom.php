@@ -25,6 +25,13 @@ Route::group([
     Route::crud('notification-templates', 'NotificationTemplateCrudController');
     Route::crud('clients', 'ClientCrudController');
     Route::crud('users', 'UserCrudController');
+
+    // Clone Products
+    Route::post('products/clone', 'ProductCrudController@cloneProduct')->name('clone.product');
+
+    // Update Order Status
+    Route::post('orders/update-status', 'OrderCrudController@updateStatus')->name('updateOrderStatus');
+
 }); // this should be the absolute last line of this file
 
 
