@@ -1,1 +1,1 @@
-<span>https://siberfx.com</span>
+<span>{{ config('app.url') }}</span>
