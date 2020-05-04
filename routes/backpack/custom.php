@@ -33,7 +33,6 @@ Route::group([
 
 }); // this should be the absolute last line of this file
 
-
 // Ajax
 Route::group([
     'middleware' => ['web', config('backpack.base.middleware_key', 'admin')],

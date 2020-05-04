@@ -1,0 +1,11 @@
+.sidebar .sidebar-nav, .sidebar .sidebar-scroll {
+    width: 215px;
+
+}
+.sidebar .nav {
+    width: 215px;
+}
+.sidebar .nav-link, .sidebar .nav-link.active {
+    font-size: 14px;
+    font-weight: normal;
+}
