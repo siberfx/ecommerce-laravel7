@@ -83,6 +83,12 @@ class Order extends Model
     protected $table = 'orders';
 
     protected $fillable = [
+        'user_id',
+        'carrier_id',
+        'currency_id',
+        'shipping_address_id',
+        'billing_address_id',
+        'billing_company_id',
         'status_id',
         'comment',
         'invoice_date',
@@ -123,21 +129,6 @@ class Order extends Model
         ];
     }
 
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::updating(function($order) {
-            // Send notification when order status was changed
-            $oldStatus = $order->getOriginal();
-            if ($order->status_id != $oldStatus['status_id'] && $order->status->notification != 0) {
-                // example of usage: (be sure that a notification template mail with the slug "example-slug" exists in db)
-                return Mail::to($order->user->email)->send(new NotificationTemplateMail($order, "order-status-changed"));
-            }
-        });
-    }
-
     /**
      * @return mixed
      */
@@ -153,7 +144,7 @@ class Order extends Model
      */
     public function user()
     {
-        return $this->hasOne(User::class, 'id', 'user_id');
+        return $this->hasOne(User::class, 'id');
     }
 
     /**
@@ -217,7 +208,7 @@ class Order extends Model
      */
     public function products()
     {
-        return $this->belongsToMany(Product::class)->withPivot(['name', 'sku', 'price', 'price_with_tax',  'quantity']);
+        return $this->belongsToMany(Product::class)->withPivot(['name', 'sku', 'price', 'price_with_tax', 'quantity']);
     }
 
     /**

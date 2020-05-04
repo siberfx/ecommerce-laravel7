@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static Builder|Tax whereName($value)
  * @method static Builder|Tax whereValue($value)
  * @mixin Eloquent
+ * @property-read Product $product
  */
 class Tax extends Model
 {

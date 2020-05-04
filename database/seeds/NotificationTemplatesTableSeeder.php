@@ -22,7 +22,7 @@ class NotificationTemplatesTableSeeder extends Seeder
                             <p>Your order status was changed to&nbsp;&nbsp;{{ status }}.</p>
 
                             <p>Best,</p>
-                            <p>eStarter team.</p>',
+                            <p>siberFx eCommerce team.</p>',
     		],
     	];
 
