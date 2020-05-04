@@ -14,12 +14,6 @@ class CreateDiscountTypesForTables extends Migration
     public function up()
     {
 
-        Schema::create('specific_price_discount_types', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->nullableTimestamps();
-        });
-
         Schema::create('cart_rule_discount_types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -35,8 +29,6 @@ class CreateDiscountTypesForTables extends Migration
      */
     public function down()
     {
-
-        Schema::dropIfExists('specific_price_discount_types');
         Schema::dropIfExists('cart_rule_discount_types');
     }
 }

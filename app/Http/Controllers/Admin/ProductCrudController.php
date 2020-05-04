@@ -3,11 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\ProductRequest;
-use App\Models\Attribute;
 use App\Models\Product;
-use App\Models\ProductGroup;
 use App\Models\ProductImage;
-use App\Models\SpecificPrice;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
 use Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
@@ -44,13 +41,32 @@ class ProductCrudController extends CrudController
         $this->crud->addFields(
             $this->getFields()
         );
-        $this->getAditionalFields();
-
 
     }
 
     protected function setupListOperation()
     {
+    }
+
+    protected function setupUpdateOperation()
+    {
+        $this->crud->setValidation(ProductRequest::class);
+
+        $this->crud->addField(
+            [
+                'name'          => 'dropzone',
+                'type'          => 'dropzone',
+                'disk'          => 'products', // disk where images will be uploaded
+                'mimes'         => [
+                    'image/*'
+                ],
+                'filesize'      => 5, // maximum file size in MB
+
+                // TAB
+                'tab'           => __('product.product_images_tab'),
+            ]
+        );
+
     }
 
 
@@ -202,70 +218,6 @@ class ProductCrudController extends CrudController
                 // TAB
                 'tab'   => __('product.general_tab'),
             ],
-            [
-                'name'       => 'attribute_set_id',
-                'label'      => __('attribute.attribute_sets'),
-                'type'       => 'select2',
-                'entity'     => 'attributes',
-                'attribute'  => 'name',
-                'model'      => "App\Models\AttributeSet",
-                'attributes' => [
-                    'id'    => 'attributes-set'
-                ],
-
-                // TAB
-                'tab'   => __('product.attributes_tab'),
-            ],
-            [
-                'name'  => 'attribute_types',
-                'label' => __('attribute.name'),
-                'type'  => 'product_attributes',
-
-                // TAB
-                'tab'   => __('product.attributes_tab'),
-            ],
-
-            [  // Select
-                'label' => __('specificprice.discount_type'),
-                'type' => 'select',
-                'name' => 'discount_type', // the db column for the foreign key
-                'entity' => 'category', // the method that defines the relationship in your Model
-                'attribute' => 'name', // foreign key attribute that is shown to user
-                'model' => "App\Models\SpecificPrice",
-                // force the related options to be a custom query, instead of all(); you can use this to filter the results show in the select
-                'tab'   => __('product.attributes_tab'),
-
-            ],
-
-            [
-                'name'  => 'reduction',
-                'label' => __('specificprice.reduction'),
-                'model' => 'App\Models\SpecificPrice',
-                'attribute'   => 'reduction',
-                'type'  => 'number',
-
-                // TAB
-                'tab'   => __('specificprice.specific_price')
-            ],
-            [
-                'name'  => 'start_date',
-                'label' => __('specificprice.start_date'),
-                'type'  => 'datetime_picker',
-                'model' => 'App\Models\SpecificPrice',
-                'attribute'   => 'start_date',
-                // TAB
-                'tab'   => __('specificprice.specific_price')
-            ],
-            [
-                'name'  => 'expiration_date',
-                'label' => __('specificprice.expiration_date'),
-                'type'  => 'datetime_picker',
-                'model' => 'App\Models\SpecificPrice',
-                'attribute'   => 'expiration_date',
-
-                // TAB
-                'tab'   => __('specificprice.specific_price')
-            ],
 
         ];
     }
@@ -334,175 +286,20 @@ class ProductCrudController extends CrudController
         }
     }
 
-    public function store(ProductRequest $request, ProductGroup $productGroup, SpecificPrice $specificPrice)
+    public function store(ProductRequest $request)
     {
-        // Create group entry
-        $productGroup = $productGroup->create();
-
-        $request->merge([
-            'group_id' => $productGroup->id
-        ]);
-
         $redirect_location = $this->traitStore();
-
-        // Save product's attribute values
-        if ($request->input('attributes')) {
-            foreach ($request->input('attributes') as $key => $attr_value) {
-                if (is_array($attr_value)) {
-                    foreach ($attr_value as $value) {
-                        $this->crud->entry->attributes()->attach([$key => ['value' => $value]]);
-                    }
-                } else {
-                    $this->crud->entry->attributes()->attach([$key => ['value' => $attr_value]]);
-                }
-            }
-        }
-
-        $productId = $this->crud->entry->id;
-        $reduction = $request->input('reduction');
-        $discountType = $request->input('discount_type');
-        $startDate = $request->input('start_date');
-        $expirationDate = $request->input('expiration_date');
-
-        if(!$request->has('start_date') || !$request->has('expiration_date')) {
-            \Alert::error(__('specificprice.dates_cant_be_null'))->flash();
-            return $redirect_location;
-        }
-
-        // Check if a specific price reduction doesn't already exist in this period
-        if(!$this->validateProductDates($productId, $startDate, $expirationDate)) {
-            $product = Product::find($productId);
-            $productName = $product->name;
-
-            \Alert::error(__('specificprice.wrong_dates', ['productName' => $productName]))->flash();
-            return $redirect_location;
-        }
-
-        // Check if the price after reduction is not less than 0
-        if($request->has('reduction') && $request->has('discount_type')) {
-            if(!$this->validateReductionPrice($productId, $reduction,
-                $discountType)) {
-                \Alert::error(
-                    __('specificprice.reduction_price_not_ok'))->flash();
-            }
-            else{
-                // Save specific price
-                $specificPrice->discount_type = $discountType;
-                $specificPrice->reduction = $reduction;
-                $specificPrice->start_date = $startDate;
-                $specificPrice->expiration_date = $expirationDate;
-                $specificPrice->product_id = $productId;
-                $specificPrice = $specificPrice->save();
-            }
-        }
 
         return $redirect_location;
     }
 
 
-    public function update(ProductRequest $request, Attribute $attribute, Product $product)
+    public function update(ProductRequest $request, Product $product)
     {
         // Get current product data
         $product = $product->findOrFail($this->crud->request->id);
 
-        $redirect_location = parent::updateCrud($request);
-
-        // Add product attributes ids and values in attribute_product_value (pivot)
-        if ($request->input('attributes')) {
-
-            // Set attributes upload disk
-            $disk = 'attributes';
-
-            // Get old product atrribute values
-            $oldAttributes = [];
-
-            foreach ($this->crud->entry->attributes as $oldAttribute) {
-                $oldAttributes[$oldAttribute->id] = $oldAttribute->pivot->value;
-            }
-
-            // Check if attribute set was changed and delete uploaded data from disk on attribute type media
-            if ($product->attribute_set_id != $this->crud->request->attribute_set_id) {
-                foreach ($oldAttributes as $key => $oldAttribute) {
-                    if (\Storage::disk($disk)->has($oldAttribute) && $attribute->find($key)->values->first()->value != $oldAttribute) {
-                        \Storage::disk($disk)->delete($oldAttribute);
-                    }
-                }
-            }
-
-            $this->crud->entry->attributes()->detach();
-
-            foreach ($request->input('attributes') as $key => $attr_value) {
-                if (is_array($attr_value)) {
-                    foreach ($attr_value as $value) {
-                        $this->crud->entry->attributes()->attach([$key => ['value' => $value]]);
-                    }
-                } else {
-                    if(starts_with($attr_value, 'data:image')) {
-                        // 1. Delete old image
-                        if ($product->attribute_set_id == $this->crud->request->attribute_set_id) {
-                            if (\Storage::disk($disk)->has($oldAttributes[$key]) && $attribute->find($key)->values->first()->value != $oldAttributes[$key]) {
-                                \Storage::disk($disk)->delete($oldAttributes[$key]);
-                            }
-                        }
-                        // 2. Make the image
-                        $image = \Image::make($attr_value);
-                        // 3. Generate a filename.
-                        $filename = md5($attr_value.time()).'.jpg';
-                        // 4. Store the image on disk.
-                        \Storage::disk($disk)->put($filename, $image->stream());
-                        // 5. Update image filename to attributes_value
-                        $attr_value = $filename;
-                    }
-
-                    $this->crud->entry->attributes()->attach([$key => ['value' => $attr_value]]);
-                }
-            }
-        }
-
-
-        $discountType = $request->input('discount_type');
-        $reduction = $request->input('reduction');
-        $startDate = $request->input('start_date');
-        $expirationDate = $request->input('expiration_date');
-        $productId = $this->crud->entry->id;
-
-
-        // Check if the price after reduction is not less than 0
-        if($request->reduction && $request->discount_type && $discountType) {
-            if(!$this->validateReductionPrice($productId, $reduction,
-                $discountType)) {
-                \Alert::error(
-                    __('specificprice.reduction_price_not_ok'))->flash();
-                return $redirect_location;
-            }
-        }
-
-        // Check if a specific price reduction doesn't already exist in this period
-        if(!$this->validateProductDates($productId, $startDate, $expirationDate)) {
-            $product = Product::find($productId);
-            $productName = $product->name;
-
-            \Alert::error(__('specificprice.wrong_dates', ['productName' => $productName]))->flash();
-            return $redirect_location;
-        }
-
-        if($request->reduction && $request->discount_type && $discountType) {
-            if(!$request->start_date || !$request->expiration_date) {
-                \Alert::error(__('specificprice.dates_cant_be_null'))->flash();
-                return $redirect_location;
-            }
-
-            // Save specific price
-            $specificPrice = new SpecificPrice();
-
-            $specificPrice->discount_type = $discountType;
-            $specificPrice->reduction = $reduction;
-            $specificPrice->start_date = $startDate;
-            $specificPrice->expiration_date = $expirationDate;
-            $specificPrice->product_id = $productId;
-            $specificPrice = $specificPrice->save();
-        }
-
+        $redirect_location = $this->traitUpdate();
 
         return $redirect_location;
     }
@@ -534,7 +331,7 @@ class ProductCrudController extends CrudController
         }
 
         // Prepare relations
-        $relations = ['categories', 'attributes'];
+        $relations = ['categories'];
 
         if ( $cloneImages ) {
             array_push($relations, 'images');
@@ -604,12 +401,12 @@ class ProductCrudController extends CrudController
     }
 
     /**
-     * Validate if the price after reduction is not less than 0
-     *
-     * @return boolean
+     * @param $productId
+     * @param $reduction
+     * @param $discountType
+     * @return bool
      */
-    public function validateReductionPrice($productId, $reduction,
-                                           $discountType)
+    public function validateReductionPrice($productId, $reduction, $discountType)
     {
 
         $product = Product::find($productId);
@@ -627,60 +424,4 @@ class ProductCrudController extends CrudController
         return true;
     }
 
-    /**
-     * Check if it doesn't already exist a specific price reduction for the same
-     * period for a product
-     *
-     * @return boolean
-     */
-    public function validateProductDates($productId, $startDate, $expirationDate)
-    {
-        $specificPrice = SpecificPrice::where('product_id', $productId)->get();
-
-        foreach ($specificPrice as $item) {
-            $existingStartDate = $item->start_date;
-            $existingExpirationDate = $item->expiration_date;
-            if($expirationDate >= $existingStartDate
-                && $startDate <= $existingExpirationDate) {
-                return false;
-            }
-            if($expirationDate >= $existingStartDate
-                && $startDate <= $existingExpirationDate) {
-                return false;
-            }
-            if($startDate <= $existingStartDate
-                && $expirationDate >= $existingExpirationDate) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private function getAditionalFields()
-    {
-        $this->crud->addField(
-            [
-                'name'          => 'dropzone',
-                'type'          => 'dropzone',
-                'disk'          => 'products', // disk where images will be uploaded
-                'mimes'         => [
-                    'image/*'
-                ],
-                'filesize'      => 5, // maximum file size in MB
-
-                // TAB
-                'tab'           => __('product.product_images_tab'),
-            ], 'update');
-
-        $this->crud->addField(
-            [
-                'name'          => 'product_group',
-                'type'          => 'product_group',
-                'model'         => 'App\Models\Product',
-
-                // TAB
-                'tab'           => __('product.group_tab'),
-            ], 'update');
-    }
 }

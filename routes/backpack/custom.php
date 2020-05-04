@@ -21,7 +21,6 @@ Route::group([
     Route::crud('orders', 'OrderCrudController');
     Route::crud('order-statuses', 'OrderStatusCrudController');
     Route::crud('cart-rules', 'CartRuleCrudController');
-    Route::crud('specific-prices', 'SpecificPriceCrudController');
     Route::crud('notification-templates', 'NotificationTemplateCrudController');
     Route::crud('clients', 'ClientCrudController');
     Route::crud('users', 'UserCrudController');

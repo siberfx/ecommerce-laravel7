@@ -86,7 +86,7 @@ class Product extends Model
 
         static::deleting(function($model) {
             $model->categories()->detach();
-            $model->attributes()->detach();
+         //   $model->attributes()->detach();
 
             // Delete product images
             $disk = 'products';
@@ -113,14 +113,6 @@ class Product extends Model
 	}
 
     /**
-     * @return BelongsToMany
-     */
-	public function attributes()
-	{
-		return $this->belongsToMany(Attribute::class, 'attribute_product_value', 'product_id', 'attribute_id')->withPivot('value');
-	}
-
-    /**
      * @return HasOne
      */
 	public function tax()
@@ -137,14 +129,6 @@ class Product extends Model
 	}
 
     /**
-     * @return BelongsTo
-     */
-    public function group()
-    {
-        return $this->belongsTo(ProductGroup::class);
-    }
-
-    /**
      * @return BelongsToMany
      */
     public function cartRules()
@@ -152,20 +136,14 @@ class Product extends Model
         return $this->belongsToMany(CartRule::class);
     }
 
-    /**
-     * @return BelongsTo
-     */
-    public function specificPrice()
-    {
-        return $this->belongsTo(SpecificPrice::class);
-    }
 
     /**
      * @param $query
      */
     public function scopeLoadCloneRelations($query)
     {
-        $query->with('categories', 'attributes', 'images');
+        $query->with('categories', 'images');
+//        $query->with('categories', 'attributes', 'images');
     }
 
     /**

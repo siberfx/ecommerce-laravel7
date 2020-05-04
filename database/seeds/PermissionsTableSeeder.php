@@ -66,12 +66,6 @@ class PermissionsTableSeeder extends Seeder
             ['name' => 'update_cart_rule'],
             ['name' => 'delete_cart_rule'],
 
-
-            ['name' => 'list_specific_prices'],
-            ['name' => 'create_specific_price'],
-            ['name' => 'update_specific_price'],
-            ['name' => 'delete_specific_price'],
-
             ['name' => 'list_notification_templates'],
             ['name' => 'create_notification_template'],
             ['name' => 'update_notification_template'],

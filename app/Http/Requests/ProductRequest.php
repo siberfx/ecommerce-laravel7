@@ -34,9 +34,9 @@ class ProductRequest extends FormRequest
             'sku'               => 'required|unique:products,sku'.($this->request->get('id') ? ','.$this->request->get('id') : ''),
             'stock'             => 'required|numeric',
             'active'            => 'required|numeric|between:0,1',
-            'attribute_set_id' => 'required',
-            'attributes'        => 'sometimes|required',
-            'attributes.*'      => 'sometimes|required'
+//            'attribute_set_id' => 'required',
+//            'attributes'        => 'sometimes|required',
+//            'attributes.*'      => 'sometimes|required'
         ];
     }
 

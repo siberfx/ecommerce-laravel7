@@ -82,14 +82,6 @@ class UpdateCartRulesForeignKeys extends Migration
         });
 
 
-        Schema::table('specific_prices', function (Blueprint $table) {
-
-            $table->foreign('product_id')
-                ->references('id')->on('products')
-                ->onDelete('no action')
-                ->onUpdate('no action');
-        });
-
         Schema::enableForeignKeyConstraints();
     }
 

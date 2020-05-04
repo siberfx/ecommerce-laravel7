@@ -72,12 +72,5 @@ class Currency extends Model
         return $default_currency_id;
     }
 
-    /**
-     * @return BelongsTo
-     */
-	public function specificPrice()
-	{
-		return $this->belongsTo(SpecificPrice::class, 'id');
-	}
 
 }

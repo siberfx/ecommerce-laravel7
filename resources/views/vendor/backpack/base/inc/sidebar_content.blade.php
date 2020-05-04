@@ -10,7 +10,6 @@
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('taxes') }}'><i class='nav-icon fa fa-balance-scale'></i> {{ __('tax.taxes') }}</a></li>
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('order-statuses') }}'><i class='nav-icon fa fa-list-ul'></i> {{ __('order.order_statuses') }}</a></li>
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('cart-rules') }}'><i class='nav-icon fa fa-shopping-cart'></i> {{ __('cartrule.cart_rules') }}</a></li>
-<li class='nav-item'><a class='nav-link' href='{{ backpack_url('specific-prices') }}'><i class='nav-icon fa fa-money'></i> {{ __('specificprice.specific_prices') }}</a></li>
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('notification-templates') }}'><i class='nav-icon fa fa-list'></i> {{ __('notification_templates.notification_templates') }}</a></li>
 <li class="nav-item nav-dropdown">
     <a class="nav-link nav-dropdown-toggle" href="#"><i class="nav-icon fa fa-group"></i> Authentication</a>

@@ -13,10 +13,11 @@ class CartRuleDiscountTypesTableSeeder extends Seeder
     public function run()
     {
         $data = [
-            'Percent - order',
-            'Percent - selected products',
-            'Percent - cheapest product',
-            'Percent - most expensive product', 'Amount - order'
+            ['name' => 'Percent - order'],
+            ['name' => 'Percent - selected products'],
+            ['name' => 'Percent - cheapest product'],
+            ['name' => 'Percent - most expensive product'],
+            ['name' => 'Amount - order'],
 
         ];
 
