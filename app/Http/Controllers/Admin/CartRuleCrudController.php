@@ -39,7 +39,6 @@ class CartRuleCrudController extends CrudController
         $this->crud->addFields(
             $this->getFields()
         );
-
     }
 
     protected function setupListOperation()
@@ -207,20 +206,21 @@ class CartRuleCrudController extends CrudController
                 ],
                 'tab'       => trans('cartrule.conditions_tab'),
             ],
-            [
-                'name'      => 'minimum_amount_currency_id',
-                'label'     => trans('cartrule.currency'),
-                'entity'    => 'currency',
-                'attribute' => 'name',
-                'model'     => 'App\Models\Currency',
-                'wrapperAttributes' => [
-                    'class' => 'form-group col-md-4'
-                ],
-                'type'      => 'select2_currency',
-                'default_currency'   => $defaultCurrencyName,
-                'default_currency_id' => $defaultCurrencyId,
-                'tab'       => trans('cartrule.conditions_tab'),
-            ],
+            // @todo
+//            [
+//                'name'      => 'minimum_amount_currency_id',
+//                'label'     => trans('cartrule.currency'),
+//                'entity'    => 'currency',
+//                'attribute' => 'name',
+//                'model'     => 'App\Models\Currency',
+//                'wrapperAttributes' => [
+//                    'class' => 'form-group col-md-4'
+//                ],
+//                'type'      => 'select2_currency',
+//                'default_currency'   => $defaultCurrencyName,
+//                'default_currency_id' => $defaultCurrencyId,
+//                'tab'       => trans('cartrule.conditions_tab'),
+//            ],
             [
                 'name'  => 'restrictions',
                 'label' => '',
