@@ -30,7 +30,7 @@ Route::group([
 
     // Update Order Status
     Route::post('orders/update-status', 'OrderCrudController@updateStatus')->name('updateOrderStatus');
-
+    Route::get('orders/invoice/{id}', 'InvoiceController@generate')->name('generateInvoice');
 }); // this should be the absolute last line of this file
 
 // Ajax

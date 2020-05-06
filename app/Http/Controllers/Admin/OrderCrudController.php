@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\OrderRequest;
+use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Models\OrderStatusHistory;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
@@ -37,7 +38,8 @@ class OrderCrudController extends CrudController
 
     protected function setupListOperation()
     {
-        //
+        $this->crud->addButtonFromModelFunction('line', 'generate_invoice', 'generateInvoice', 'beginning');
+
     }
 
     protected function setupCreateOperation()
