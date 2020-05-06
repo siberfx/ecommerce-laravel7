@@ -219,4 +219,14 @@ class Order extends Model
     {
         return Carbon::createFromFormat('Y-m-d H:i:s', $value)->format('d-m-Y H:i:s');
     }
+
+    public function generateInvoice()
+    {
+        return '
+        <a class="btn btn-sm btn-link"
+            target="_blank"
+            href="'.url('/admin/orders/invoice/').$this->id.'"
+            data-toggle="tooltip" title="Generate invoice">
+            <i class="fa fa-file-pdf-o"></i> Invoice</a>';
+    }
 }
