@@ -1,5 +1,5 @@
 
-<div class="form-group col-md-12 @include('crud::inc.field_wrapper_attributes')">
+@include('crud::fields.inc.wrapper_start')
     <div class="dropzone sortable dz-clickable sortable">
         <div class="dz-message">
             Drop files here or click to upload.
@@ -9,13 +9,13 @@
         @if ( $entry->images->count() )
             @foreach($entry->images as $image)
                 <div class="dz-preview" data-id="{{ $image->id }}">
-                    <img class="dropzone-thumbnail" src={{ asset('uploads/products/'.$image->name) }}>
-                    <a class="dz-remove" href="javascript:void(0);" data-remove="{{ $image->id }}">Remove file</a>
+                    <img class="dropzone-thumbnail" src={{ '/storage/portfolio/'.$image->name }}>
+                    <a class="dz-remove" href="javascript:void(0);" data-remove="{{ $image->id }}">{{ __('backend.delete_image') }}</a>
                 </div>
             @endforeach
         @endif
     </div>
-</div>
+@include('crud::fields.inc.wrapper_end')
 
 
 @if ($crud->checkIfFieldIsFirstOfItsType($field, $fields))

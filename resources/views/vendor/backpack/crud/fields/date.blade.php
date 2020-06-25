@@ -8,18 +8,18 @@ if (isset($field['value']) && ($field['value'] instanceof \Carbon\CarbonInterfac
 }
 ?>
 
-<div @include('crud::inc.field_wrapper_attributes') >
+@include('crud::fields.inc.wrapper_start')
     <label>{!! $field['label'] !!}</label>
-    @include('crud::inc.field_translatable_icon')
+    @include('crud::fields.inc.translatable_icon')
     <input
         type="date"
         name="{{ $field['name'] }}"
         value="{{ old(square_brackets_to_dots($field['name'])) ?? $field['value'] ?? $field['default'] ?? '' }}"
-        @include('crud::inc.field_attributes')
+        @include('crud::fields.inc.attributes')
         >
 
     {{-- HINT --}}
     @if (isset($field['hint']))
         <p class="help-block">{!! $field['hint'] !!}</p>
     @endif
-</div>
+@include('crud::fields.inc.wrapper_end')

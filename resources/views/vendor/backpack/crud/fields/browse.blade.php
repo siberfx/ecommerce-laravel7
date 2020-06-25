@@ -1,26 +1,25 @@
 <!-- browse server input -->
 
-<div @include('crud::inc.field_wrapper_attributes') >
+@include('crud::fields.inc.wrapper_start')
 
     <label>{!! $field['label'] !!}</label>
-    @include('crud::inc.field_translatable_icon')
+    @include('crud::fields.inc.translatable_icon')
     <div class="controls">
 	    <div class="input-group">
 			<input
 				type="text"
-				id="{{ $field['name'] }}-filemanager"
 				name="{{ $field['name'] }}"
 		        value="{{ old(square_brackets_to_dots($field['name'])) ?? $field['value'] ?? $field['default'] ?? '' }}"
 		        data-init-function="bpFieldInitBrowseElement"
 		        data-elfinder-trigger-url="{{ url(config('elfinder.route.prefix').'/popup') }}"
-		        @include('crud::inc.field_attributes')
+		        @include('crud::fields.inc.attributes')
 
 				@if(!isset($field['readonly']) || $field['readonly']) readonly @endif
 			>
 
 			<span class="input-group-append">
-			  	<button type="button" data-inputid="{{ $field['name'] }}-filemanager" class="btn btn-light btn-sm popup_selector"><i class="fa fa-cloud-upload"></i> {{ trans('backpack::crud.browse_uploads') }}</button>
-				<button type="button" data-inputid="{{ $field['name'] }}-filemanager" class="btn btn-light btn-sm clear_elfinder_picker"><i class="fa fa-eraser"></i> {{ trans('backpack::crud.clear') }}</button>
+			  	<button type="button" data-inputid="{{ $field['name'] }}-filemanager" class="btn btn-light btn-sm popup_selector"><i class="la la-cloud-upload"></i> {{ trans('backpack::crud.browse_uploads') }}</button>
+				<button type="button" data-inputid="{{ $field['name'] }}-filemanager" class="btn btn-light btn-sm clear_elfinder_picker"><i class="la la-eraser"></i> {{ trans('backpack::crud.clear') }}</button>
 			</span>
 		</div>
 	</div>
@@ -29,7 +28,7 @@
         <p class="help-block">{!! $field['hint'] !!}</p>
     @endif
 
-</div>
+@include('crud::fields.inc.wrapper_end')
 
 {{-- ########################################## --}}
 {{-- Extra CSS and JS for this particular field --}}
@@ -40,7 +39,7 @@
 	@endphp
 
 	{{-- FIELD CSS - will be loaded in the after_styles section --}}
-	@push('crud_fields_styles')
+    @push('crud_fields_styles')
 		<!-- include browse server css -->
 		<link href="{{ asset('packages/jquery-colorbox/example2/colorbox.css') }}" rel="stylesheet" type="text/css" />
 		<style>
@@ -50,7 +49,7 @@
 		</style>
 	@endpush
 
-	@push('crud_fields_scripts')
+    @push('crud_fields_scripts')
 		<!-- include browse server js -->
 		<script src="{{ asset('packages/jquery-colorbox/jquery.colorbox-min.js') }}"></script>
 		<script type="text/javascript">

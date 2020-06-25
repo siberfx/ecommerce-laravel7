@@ -1,62 +1,36 @@
 <!-- select_and_order -->
 @php
-    $values = isset($field['value']) ? (array)$field['value'] : [];
+    $values = old($field['name']) ?? $field['value'] ?? $field['default'] ?? [];
+    $values = (array)$values;
 @endphp
 
-<div @include('crud::inc.field_wrapper_attributes') >
+@include('crud::fields.inc.wrapper_start')
     <label>{!! $field['label'] !!}</label>
-    @include('crud::inc.field_translatable_icon')
-    <div class="row" 
+    @include('crud::fields.inc.translatable_icon')
+    <div class="row"
          data-init-function="bpFieldInitSelectAndOrderElement"
+         data-all-options='@json($field['options'])'
          data-field-name="{{ $field['name'] }}">
         <div class="col-md-12">
-        <ul id="{{ $field['name'] }}_selected" data-identifier="selected" class="{{ $field['name'] }}_connectedSortable select_and_order_selected float-left">
-            @if(old($field["name"]))
-                @if(is_array(old($field["name"])))
-                    @foreach (old($field["name"]) as $key)
-                        @if(array_key_exists($key,$field['options']))
-                            <li value="{{$key}}"><i class="fa fa-arrows"></i> {{ $field['options'][$key] }}</li>
-                        @endif
-                    @endforeach
-                @endif
-            @elseif (is_array($values))
-                @foreach ($values as $key)
-                    @if(array_key_exists($key,$field['options']))
-                    <li value="{{$key}}"><i class="fa fa-arrows"></i> {{ $field['options'][$key] }}</li>
-                    @endif
-                @endforeach
-            @endif
-        </ul>
-        <ul id="{{ $field['name'] }}_all" data-identifier="all" class="{{ $field['name'] }}_connectedSortable select_and_order_all float-right">
-            @if(old($field["name"]))
-                @foreach ($field['options'] as $key => $value)
-                    @if(!is_array(old($field["name"])) || !in_array($key, old($field["name"])))
-                        <li value="{{ $key}}"><i class="fa fa-arrows"></i> {{ $value }}</li>
-                    @endif
-                @endforeach
-            @elseif (isset($field['options']))
-                @foreach ($field['options'] as $key => $value)
-                    @if(is_array($values) && !in_array($key, $values))
-                        <li value="{{ $key}}"><i class="fa fa-arrows"></i> {{ $value }}</li>
-                    @endif
-                @endforeach
-            @endif
-        </ul>
+            <ul data-identifier="drag-destination" class="{{ $field['name'] }}_connectedSortable select_and_order_selected float-left"></ul>
+            <ul data-identifier="drag-source" class="{{ $field['name'] }}_connectedSortable select_and_order_all float-right"></ul>
 
-        {{-- The results will be stored here --}}
-        <div id="{{ $field['name'] }}_results">
-            @foreach ($values as $key)
-                <input type="hidden" name="{{ $field['name'] }}[]" value="{{ $key }}">
-            @endforeach
+            {{-- The results will be stored here --}}
+            <div data-identifier="results">
+                <select class="d-none" 
+                    name="{{ $field['name'] }}[]" 
+                    data-selected-options='@json($values)'
+                    multiple>
+                </select>
+            </div>
         </div>
-    </div>
 
     {{-- HINT --}}
     @if (isset($field['hint']))
         <p class="help-block">{!! $field['hint'] !!}</p>
     @endif
     </div>
-</div>
+@include('crud::fields.inc.wrapper_end')
 
 
 {{-- ########################################## --}}
@@ -69,6 +43,7 @@
 
     {{-- FIELD CSS - will be loaded in the after_styles section --}}
     @push('crud_fields_styles')
+
     <style>
         .select_and_order_all,
         .select_and_order_selected {
@@ -120,47 +95,86 @@
     </style>
     @endpush
 
-    @push('crud_fields_scripts')
-        <script src="{{ asset('packages/jquery-ui-dist/jquery-ui.min.js') }}"></script>
-    @endpush
-
-@endif
-
 {{-- FIELD JS - will be loaded in the after_scripts section --}}
 @push('crud_fields_scripts')
+<script src="{{ asset('packages/jquery-ui-dist/jquery-ui.min.js') }}"></script>
 <script>
     function bpFieldInitSelectAndOrderElement(element) {
-        var $selected = element.find('[data-identifier=selected]');
-        var $all = element.find('[data-identifier=all]');
+        var $dragSource = element.find('[data-identifier=drag-source]');
+        var $dragDestination = element.find('[data-identifier=drag-destination]');
+        var $hiddenSelect = element.find('[data-identifier=results] select');
         var $fieldName = element.attr('data-field-name');
+        var $alreadySelectedOptions = $hiddenSelect.data('selected-options');
+        var $allOptions = element.data('all-options');
 
-        $( "#"+$fieldName+"_all, #"+$fieldName+"_selected" ).sortable({
+        // selected options should be an array no matter what was received (string or direct array)
+        // useful if the selected-options were set by the repeatable field
+        if (typeof $alreadySelectedOptions === 'string' ) {
+            $alreadySelectedOptions = $alreadySelectedOptions.split(",");
+        }
+
+        // set unique IDs on the drag-and-drop areas so we can reference them later on
+        var $allId = 'sao_all_'+Math.ceil(Math.random() * 1000000);
+        var $selectedId = 'sao_selected_'+Math.ceil(Math.random() * 1000000);
+
+        element.find('[data-identifier=drag-destination]').attr('id', $selectedId);
+        element.find('[data-identifier=drag-source]').attr('id', $allId);
+
+        // initialize jQueryUI sortable
+        $( "#"+$allId+", #"+$selectedId ).sortable({
             connectWith: "."+$fieldName+"_connectedSortable",
+            create: function (event, ui) {
+                // populate all options in the right-hand area (aka $dragSource)
+                if (Object.keys($allOptions).length) {
+                    $dragSource.html("");
+
+                    for (value in $allOptions) {
+                        $dragSource.append('<li value="'+value+'"><i class="la la-arrows"></i> '+$allOptions[value]+'</li>');
+                    }
+                }
+
+                // populate selected options in the left-hand area (aka $dragDestination)
+                if ($alreadySelectedOptions.length) {
+                    if ($alreadySelectedOptions.length == 1 && ($alreadySelectedOptions[0] =='' || $alreadySelectedOptions == ' ' ) ) {
+                        return;
+                    }
+
+                    $dragDestination.html("");
+                    $hiddenSelect.html("");
+
+                    $alreadySelectedOptions.forEach(function(value, key) {
+                        $dragDestination.append('<li value="'+value+'"><i class="la la-arrows"></i> '+$allOptions[value]+'</li>');
+                        $dragSource.find('li[value='+value+']').remove();
+                        $hiddenSelect.append('<option value="'+value+'" selected></option>');
+                    });
+                }
+            },
             update: function() {
                 var updatedlist = $(this).attr('id');
-                if((updatedlist == $fieldName+"_selected")) {
-                    $("#"+$fieldName+"_results").html("");
-                    if($("#"+$fieldName+"_selected").find('li').length==0) {
-                        var input = document.createElement("input");
-                        input.setAttribute('name', $fieldName);
-                        input.setAttribute('value',null);
-                        input.setAttribute('type','hidden');
-                        $("#"+$fieldName+"_results").append(input);
-                    } else {
-                        $("#"+$fieldName+"_selected").find('li').each(function(val,obj) {
-                            var input = document.createElement("input");
-                            input.setAttribute('name', $fieldName+"[]");
-                            input.setAttribute('value',obj.getAttribute('value'));
-                            input.setAttribute('type','hidden');
-                            $("#"+$fieldName+"_results").append(input);
-                        });
+
+                if((updatedlist == $selectedId)) {
+                    // clear all options inside the select
+                    $hiddenSelect.html("");
+
+                    // if there are no items dragged inside the selected area, abort
+                    if($dragDestination.find('li').length=0) {
+                        return;
                     }
+
+                    // for each item dragged inside the selected area
+                    // add a new selected option inside the hidden select
+                    $dragDestination.find('li').each(function(val,obj) {
+                        $hiddenSelect.append('<option value="'+obj.getAttribute('value')+'" selected></option>');
+                    });
                 }
             }
         }).disableSelection();
     }
 </script>
+
 @endpush
+
+@endif
 
 {{-- End of Extra CSS and JS --}}
 {{-- ########################################## --}}

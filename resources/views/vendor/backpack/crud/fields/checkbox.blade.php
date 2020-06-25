@@ -1,7 +1,7 @@
 <!-- checkbox field -->
 
-<div @include('crud::inc.field_wrapper_attributes') >
-    @include('crud::inc.field_translatable_icon')
+@include('crud::fields.inc.wrapper_start')
+    @include('crud::fields.inc.translatable_icon')
     <div class="checkbox">
         <input type="hidden" name="{{ $field['name'] }}" value="{{ old(square_brackets_to_dots($field['name'])) ?? $field['value'] ?? $field['default'] ?? 0 }}">
     	  <input type="checkbox"
@@ -16,18 +16,15 @@
     			{{ $attribute }}="{{ $value }}"
         	  @endforeach
           @endif
-          @if (!isset($field['attributes']['id']))
-              id="{{ $field['name'] }}_checkbox"
-          @endif
           >
-    	<label class="form-check-label font-weight-normal" for="{{ $field['attributes']['id'] ?? $field['name'] . '_checkbox' }}">{!! $field['label'] !!}</label>
+    	<label class="form-check-label font-weight-normal">{!! $field['label'] !!}</label>
 
         {{-- HINT --}}
         @if (isset($field['hint']))
             <p class="help-block">{!! $field['hint'] !!}</p>
         @endif
     </div>
-</div>
+@include('crud::fields.inc.wrapper_end')
 
 {{-- ########################################## --}}
 {{-- Extra CSS and JS for this particular field --}}
@@ -41,9 +38,14 @@
         <script>
             function bpFieldInitCheckbox(element) {
                 var hidden_element = element.siblings('input[type=hidden]');
+                var id = 'checkbox_'+Math.floor(Math.random() * 1000000);
 
                 // make sure the value is a boolean (so it will pass validation)
                 if (hidden_element.val() === '') hidden_element.val(0);
+
+                // set unique IDs so that labels are correlated with inputs
+                element.attr('id', id);
+                element.siblings('label').attr('for', id);
 
                 // set the default checked/unchecked state
                 // if the field has been loaded with javascript

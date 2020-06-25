@@ -1,9 +1,9 @@
-<input type="hidden" name="http_referrer" value={{ old('http_referrer') ?? \URL::previous() ?? url($crud->route) }}>
+<input type="hidden" name="http_referrer" value={{ session('referrer_url_override') ?? old('http_referrer') ?? \URL::previous() ?? url($crud->route) }}>
 
 {{-- See if we're using tabs --}}
 @if ($crud->tabsEnabled() && count($crud->getTabs()))
     @include('crud::inc.show_tabbed_fields')
-    <input type="hidden" name="current_tab" value="{{ str_slug($crud->getTabs()[0]) }}" />
+    <input type="hidden" name="current_tab" value="{{ Str::slug($crud->getTabs()[0]) }}" />
 @else
   <div class="card">
     <div class="card-body row">
@@ -11,6 +11,7 @@
     </div>
   </div>
 @endif
+
 
 {{-- Define blade stacks so css and js can be pushed from the fields to these sections. --}}
 
@@ -39,12 +40,15 @@
       } else {
         selector = $(container);
       }
-      selector.find("[data-init-function]").each(function () {
+      selector.find("[data-init-function]").not("[data-initialized=true]").each(function () {
         var element = $(this);
         var functionName = element.data('init-function');
 
         if (typeof window[functionName] === "function") {
           window[functionName](element);
+
+          // mark the element as initialized, so that its function is never called again
+          element.attr('data-initialized', 'true');
         }
       });
     }
@@ -85,15 +89,15 @@
       // Place the focus on the first element in the form
       @if( $crud->getAutoFocusOnFirstField() )
         @php
-          $focusField = array_first($fields, function($field) {
+          $focusField = Arr::first($fields, function($field) {
               return isset($field['auto_focus']) && $field['auto_focus'] == true;
           });
         @endphp
 
         @if ($focusField)
-        @php
-        $focusFieldName = !is_iterable($focusField['value']) ? $focusField['name'] : ($focusField['name'] . '[]');
-        @endphp
+          @php
+            $focusFieldName = isset($focusField['value']) && is_iterable($focusField['value']) ? $focusField['name'] . '[]' : $focusField['name'];
+          @endphp
           window.focusField = $('[name="{{ $focusFieldName }}"]').eq(0),
         @else
           var focusField = $('form').find('input, textarea, select').not('[type="hidden"]').eq(0),
@@ -127,7 +131,7 @@
                         container = field.parents('.form-group');
 
             container.addClass('text-danger');
-            container.children('input, textarea').addClass('is-invalid');
+            container.children('input, textarea, select').addClass('is-invalid');
 
             $.each(messages, function(key, msg){
                 // highlight the input that errored
@@ -136,8 +140,8 @@
 
                 // highlight its parent tab
                 @if ($crud->tabsEnabled())
-                var tab_id = $(container).parent().attr('id');
-                $("#form_tabs [aria-controls="+tab_id+"]").addClass('text-red');
+                var tab_id = $(container).closest('[role="tabpanel"]').attr('id');
+                $("#form_tabs [aria-controls="+tab_id+"]").addClass('text-danger');
                 @endif
             });
         });

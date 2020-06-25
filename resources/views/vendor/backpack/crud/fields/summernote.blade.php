@@ -3,24 +3,24 @@
     // make sure that the options array is defined
     // and at the very least, dialogsInBody is true;
     // that's needed for modals to show above the overlay in Bootstrap 4
-    $field['options'] = array_merge(['dialogsInBody' => true], $field['options'] ?? []);
+    $field['options'] = array_merge(['dialogsInBody' => true, 'tooltip' => false], $field['options'] ?? []);
 @endphp
 
-<div @include('crud::inc.field_wrapper_attributes') >
+@include('crud::fields.inc.wrapper_start')
     <label>{!! $field['label'] !!}</label>
-    @include('crud::inc.field_translatable_icon')
+    @include('crud::fields.inc.translatable_icon')
     <textarea
         name="{{ $field['name'] }}"
         data-init-function="bpFieldInitSummernoteElement"
         data-options="{{ json_encode($field['options']) }}"
-        @include('crud::inc.field_attributes', ['default_class' =>  'form-control summernote'])
+        @include('crud::fields.inc.attributes', ['default_class' =>  'form-control summernote'])
         >{{ old(square_brackets_to_dots($field['name'])) ?? $field['value'] ?? $field['default'] ?? '' }}</textarea>
 
     {{-- HINT --}}
     @if (isset($field['hint']))
         <p class="help-block">{!! $field['hint'] !!}</p>
     @endif
-</div>
+@include('crud::fields.inc.wrapper_end')
 
 
 {{-- ########################################## --}}
@@ -35,6 +35,11 @@
     @push('crud_fields_styles')
         <!-- include summernote css-->
         <link href="{{ asset('packages/summernote/dist/summernote-bs4.css') }}" rel="stylesheet" type="text/css" />
+        <style type="text/css">
+            .note-editor.note-frame .note-status-output, .note-editor.note-airframe .note-status-output {
+                height: auto;
+            }
+        </style>
     @endpush
 
     {{-- FIELD JS - will be loaded in the after_scripts section --}}

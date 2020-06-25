@@ -8,17 +8,17 @@
 		<div class="form-group backpack-filter mb-0">
 			<div class="input-group date">
 		        <div class="input-group-prepend">
-		          <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+		          <span class="input-group-text"><i class="la la-calendar"></i></span>
 		        </div>
 		        <input class="form-control pull-right"
-		        		id="datepicker-{{ str_slug($filter->name) }}"
+		        		id="datepicker-{{ $filter->name }}"
 		        		type="text"
 						@if ($filter->currentValue)
 							value="{{ $filter->currentValue }}"
 						@endif
 		        		>
-		        <div class="input-group-append datepicker-{{ str_slug($filter->name) }}-clear-button">
-		          <a class="input-group-text" href=""><i class="fa fa-times"></i></a>
+		        <div class="input-group-append datepicker-{{ $filter->name }}-clear-button">
+		          <a class="input-group-text" href=""><i class="la la-times"></i></a>
 		        </div>
 		    </div>
 		</div>
@@ -50,7 +50,7 @@
 	<script src="{{ asset('packages/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
   <script>
 		jQuery(document).ready(function($) {
-			var dateInput = $('#datepicker-{{ str_slug($filter->name) }}').datepicker({
+			var dateInput = $('#datepicker-{{ $filter->name }}').datepicker({
 				autoclose: true,
 				format: 'yyyy-mm-dd',
 				todayHighlight: true
@@ -87,18 +87,18 @@
 				}
 			});
 
-			$('li[filter-name={{ str_slug($filter->name) }}]').on('filter:clear', function(e) {
+			$('li[filter-name={{ $filter->name }}]').on('filter:clear', function(e) {
 				// console.log('date filter cleared');
 				$('li[filter-name={{ $filter->name }}]').removeClass('active');
-				$('#datepicker-{{ str_slug($filter->name) }}').datepicker('update', '');
-				$('#datepicker-{{ str_slug($filter->name) }}').trigger('changeDate');
+				$('#datepicker-{{ $filter->name }}').datepicker('update', '');
+				$('#datepicker-{{ $filter->name }}').trigger('changeDate');
 			});
 
 			// datepicker clear button
-			$(".datepicker-{{ str_slug($filter->name) }}-clear-button").click(function(e) {
+			$(".datepicker-{{ $filter->name }}-clear-button").click(function(e) {
 				e.preventDefault();
 
-				$('li[filter-name={{ str_slug($filter->name) }}]').trigger('filter:clear');
+				$('li[filter-name={{ $filter->name }}]').trigger('filter:clear');
 			})
 		});
   </script>

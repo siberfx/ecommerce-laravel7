@@ -1,10 +1,16 @@
 <!-- dependencyJson -->
-<div class="form-group col-sm-12 checklist_dependency"  
-     data-entity="{{ $field['field_unique_name'] }}"
-     data-init-function="bpFieldInitChecklistDependencyElement"
-     @include('crud::inc.field_wrapper_attributes')>
+@php
+  $field['wrapper'] = $field['wrapper'] ?? $field['wrapperAttributes'] ?? [];
+  $field['wrapper']['class'] = $field['wrapper']['class'] ?? 'form-group col-sm-12';
+  $field['wrapper']['class'] = $field['wrapper']['class'].' checklist_dependency';
+  $field['wrapper']['data-entity'] = $field['wrapper']['data-entity'] ?? $field['field_unique_name'];
+  $field['wrapper']['data-init-function'] = $field['wrapper']['init-function'] ?? 'bpFieldInitChecklistDependencyElement';
+@endphp
+
+@include('crud::fields.inc.wrapper_start')
+
     <label>{!! $field['label'] !!}</label>
-    @include('crud::inc.field_translatable_icon')
+    @include('crud::fields.inc.translatable_icon')
     <?php
         $entity_model = $crud->getModel();
 
@@ -171,7 +177,7 @@
         <p class="help-block">{!! $field['hint'] !!}</p>
     @endif
 
-  </div>
+@include('crud::fields.inc.wrapper_end')
 
 {{-- ########################################## --}}
 {{-- Extra CSS and JS for this particular field --}}
@@ -267,7 +273,7 @@
             }
           });
 
-      } 
+      }
     </script>
     @endpush
 

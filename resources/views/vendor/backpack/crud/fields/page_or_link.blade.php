@@ -12,16 +12,16 @@
     $active_pages = $page_model::all();
 ?>
 
-<div @include('crud::inc.field_wrapper_attributes') >
+@include('crud::fields.inc.wrapper_start')
     <label>{!! $field['label'] !!}</label>
-    @include('crud::inc.field_translatable_icon')
+    @include('crud::fields.inc.translatable_icon')
 
     <div class="row" data-init-function="bpFieldInitPageOrLinkElement">
         <div class="col-sm-3">
             <select
                 data-identifier="page_or_link_select"
                 name="type"
-                @include('crud::inc.field_attributes')
+                @include('crud::fields.inc.attributes')
                 >
 
                 @if (isset($field['allows_null']) && $field['allows_null']==true)
@@ -108,7 +108,7 @@
         <p class="help-block">{!! $field['hint'] !!}</p>
     @endif
 
-</div>
+@include('crud::fields.inc.wrapper_end')
 
 
 {{-- ########################################## --}}
@@ -121,6 +121,7 @@
 
     {{-- FIELD CSS - will be loaded in the after_styles section --}}
     @push('crud_fields_styles')
+
     @endpush
 
     {{-- FIELD JS - will be loaded in the after_scripts section --}}

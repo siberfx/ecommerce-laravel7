@@ -1,65 +1,49 @@
 @php
-$multiple = array_get($field, 'multiple', true);
-$sortable = array_get($field, 'sortable', false);
+$multiple = Arr::get($field, 'multiple', true);
+$sortable = Arr::get($field, 'sortable', false);
 $value = old(square_brackets_to_dots($field['name'])) ?? $field['value'] ?? $field['default'] ?? '';
 
 if (!$multiple && is_array($value)) {
-    $value = array_first($value);
+    $value = Arr::first($value);
 }
 
-if (!isset($field['wrapperAttributes']) || !isset($field['wrapperAttributes']['data-init-function']))
-{
-    $field['wrapperAttributes']['data-init-function'] = 'bpFieldInitBrowseMultipleElement';
+$field['wrapper'] = $field['wrapperAttributes'] ?? [];
+$field['wrapper']['data-init-function'] = $field['wrapper']['data-init-function'] ?? 'bpFieldInitBrowseMultipleElement';
+$field['wrapper']['data-elfinder-trigger-url'] = $field['wrapper']['data-elfinder-trigger-url'] ?? url(config('elfinder.route.prefix').'/popup/'.$field['name'].'?multiple=1');
 
-    if ($multiple) {
-        $field['wrapperAttributes']['data-popup-title'] = trans('backpack::crud.select_files');
-        $field['wrapperAttributes']['data-multiple'] = "true";
-    } else {
-        $field['wrapperAttributes']['data-popup-title'] = trans('backpack::crud.select_file');
-        $field['wrapperAttributes']['data-multiple'] = "false";
-    }
-    $field['wrapperAttributes']['data-only-mimes'] = json_encode($field['mime_types'] ?? []);
+if (isset($field['mime_types'])) {
+    $field['wrapper']['data-elfinder-trigger-url'] .= '&mimes='.urlencode(serialize($field['mime_types']));
+}
 
-    if($sortable){
-        $field['wrapperAttributes']['sortable'] = "true";
-    }
+if ($multiple) {
+    $field['wrapper']['data-multiple'] = "true";
+} else {
+    $field['wrapper']['data-multiple'] = "false";
+}
+
+if($sortable){
+    $field['wrapper']['sortable'] = "true";
 }
 @endphp
 
-<div @include('crud::inc.field_wrapper_attributes') >
+@include('crud::fields.inc.wrapper_start')
 
     <div><label>{!! $field['label'] !!}</label></div>
-    @include('crud::inc.field_translatable_icon')
+    @include('crud::fields.inc.translatable_icon')
+    <div class="list" data-field-name="{{ $field['name'] }}">
     @if ($multiple)
-        <div class="list">
-            @foreach( (array)$value as $v)
-                @if ($v)
-                    <div class="input-group input-group-sm">
-                        <input type="text" name="{{ $field['name'] }}[]" value="{{ $v }}" data-marker="multipleBrowseInput"
-                                @include('crud::inc.field_attributes') readonly>
-                        <div class="input-group-btn">
-                            <button type="button" class="browse remove btn btn-sm btn-light">
-                                <i class="fa fa-trash"></i>
-                            </button>
-                            @if ($sortable)
-                                <button type="button" class="browse move btn btn-sm btn-light"><span class="fa fa-sort"></span></button>
-                            @endif
-                        </div>
-                    </div>
-                @endif
-            @endforeach
-        </div>
+        <input type="hidden" data-marker="multipleBrowseInput" name="{{ $field['name'] }}" value="{{ json_encode($value) }}">
     @else
-        <input type="text" name="{{ $field['name'] }}" value="{{ $value }}" @include('crud::inc.field_attributes') readonly>
+        <input type="text" data-marker="multipleBrowseInput" name="{{ $field['name'] }}" value="{{ $value }}" @include('crud::fields.inc.attributes') readonly>
     @endif
-
+</div>
     <div class="btn-group" role="group" aria-label="..." style="margin-top: 3px;">
         <button type="button" class="browse popup btn btn-sm btn-light">
-            <i class="fa fa-cloud-upload"></i>
+            <i class="la la-cloud-upload"></i>
             {{ trans('backpack::crud.browse_uploads') }}
         </button>
         <button type="button" class="browse clear btn btn-sm btn-light">
-            <i class="fa fa-eraser"></i>
+            <i class="la la-eraser"></i>
             {{ trans('backpack::crud.clear') }}
         </button>
     </div>
@@ -70,18 +54,18 @@ if (!isset($field['wrapperAttributes']) || !isset($field['wrapperAttributes']['d
 
     <script type="text/html" data-marker="browse_multiple_template">
         <div class="input-group input-group-sm">
-            <input type="text" name="{{ $field['name'] }}[]" @include('crud::inc.field_attributes') readonly>
+            <input type="text" @include('crud::fields.inc.attributes') readonly>
             <div class="input-group-btn">
                 <button type="button" class="browse remove btn btn-sm btn-light">
-                    <i class="fa fa-trash"></i>
+                    <i class="la la-trash"></i>
                 </button>
                 @if($sortable)
-                    <button type="button" class="browse move btn btn-sm btn-light"><span class="fa fa-sort"></span></button>
+                    <button type="button" class="browse move btn btn-sm btn-light"><span class="la la-sort"></span></button>
                 @endif
             </div>
         </div>
     </script>
-</div>
+@include('crud::fields.inc.wrapper_end')
 
 
 {{-- ########################################## --}}
@@ -93,11 +77,7 @@ if (!isset($field['wrapperAttributes']) || !isset($field['wrapperAttributes']['d
     @endphp
 
     {{-- FIELD CSS - will be loaded in the after_styles section --}}
-    @push('crud_fields_styles')
-        <!-- include browse server css -->
-        <link rel="stylesheet" type="text/css" href="{{ asset('packages/jquery-ui-dist/jquery-ui.min.css') }}">
-        <link rel="stylesheet" type="text/css" href="{{ asset('packages/barryvdh/elfinder/css/elfinder.min.css') }}">
-        <link rel="stylesheet" type="text/css" href="{{ asset('packages/barryvdh/elfinder/css/theme.css') }}">
+    @push('crud_fields_styles')        
         <link href="{{ asset('packages/jquery-colorbox/example2/colorbox.css') }}" rel="stylesheet" type="text/css" />
         <style>
             #cboxContent, #cboxLoadedContent, .cboxIframe {
@@ -107,101 +87,122 @@ if (!isset($field['wrapperAttributes']) || !isset($field['wrapperAttributes']['d
     @endpush
 
     @push('crud_fields_scripts')
-        <!-- include browse server js -->
+        
         <script src="{{ asset('packages/jquery-ui-dist/jquery-ui.min.js') }}"></script>
         <script src="{{ asset('packages/jquery-colorbox/jquery.colorbox-min.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('packages/barryvdh/elfinder/js/elfinder.min.js') }}"></script>
-        {{-- <script type="text/javascript" src="{{ asset('packages/barryvdh/elfinder/js/extras/editors.default.min.js') }}"></script> --}}
-        @if ( ($locale = \App::getLocale()) != 'en' )
-            <script type="text/javascript" src="{{ asset("packages/barryvdh/elfinder/js/i18n/elfinder.{$locale}.js") }}"></script>
-        @endif
-
         <script>
+            // this global variable is used to remember what input to update with the file path
+            // because elfinder is actually loaded in an iframe by colorbox
+            var elfinderTarget = false;
+
+            // function to use the files selected inside elfinder
+            function processSelectedMultipleFiles(files, requestingField) {
+                elfinderTarget.trigger('createInputsForItemsSelectedWithElfinder', [files]);                
+                elfinderTarget = false;
+            }
+
             function bpFieldInitBrowseMultipleElement(element) {
+                var $triggerUrl = element.data('elfinder-trigger-url');
                 var $template = element.find("[data-marker=browse_multiple_template]").html();
                 var $list = element.find(".list");
-                var $popupButton = element.find(".popup");
-                var $clearButton = element.find(".clear");
-                var $removeButton = element.find(".remove");
                 var $input = element.find('input[data-marker=multipleBrowseInput]');
-                var $popupTitle = element.attr('data-popup-title');
-                var $onlyMimesArray = JSON.parse(element.attr('data-only-mimes'));
                 var $multiple = element.attr('data-multiple');
                 var $sortable = element.attr('sortable');
 
+                // show existing items - display visible inputs for each stored path  
+                if ($input.val() != '' && $input.val() != null && $multiple === 'true') {
+                    $paths = JSON.parse($input.val());
+                    if (Array.isArray($paths) && $paths.length) {
+                        // remove any already visible inputs
+                        $list.find('.input-group').remove();
+
+                        // add visible inputs for each item inside the hidden input array
+                        $paths.forEach(function (path) {
+                            var newInput = $($template);
+                            newInput.find('input').val(path);
+                            $list.append(newInput);
+                        });
+                    }
+                }
+
+                // make the items sortable, if configurations says so
                 if($sortable){
                     $list.sortable({
                         handle: 'button.move',
-                        cancel: ''
+                        cancel: '',
+                        update: function (event, ui) {
+                            element.trigger('saveToJson');
+                        }
                     });
                 }
 
                 element.on('click', 'button.popup', function (event) {
                     event.preventDefault();
 
-                    var div = $('<div>');
-                    div.elfinder({
-                        lang: '{{ \App::getLocale() }}',
-                        customData: {
-                            _token: '{{ csrf_token() }}'
-                        },
-                        url: '{{ route("elfinder.connector") }}',
-                        soundPath: '{{ asset('/packages/barryvdh/elfinder/sounds') }}',
-                        dialog: {
-                            width: 900,
-                            modal: true,
-                            title: $popupTitle,
-                        },
-                        resizable: false,
-                        onlyMimes: $onlyMimesArray,
-                        commandsOptions: {
-                            getfile: {
-                                multiple: $multiple,
-                                oncomplete: 'destroy'
-                            }
-                        },
-                        getFileCallback: function (files) {
-                            if ($multiple) {
-                                files.forEach(function (file) {
-                                    var newInput = $($template);
-                                    newInput.find('input').val(file.path);
-                                    $list.append(newInput);
-                                });
+                    // remember which element the elFinder was triggered by
+                    elfinderTarget = element;
 
-                                if($sortable){
-                                    $list.sortable("refresh")
-                                }
-                            } else {
-                                $input.val(files.path);
-                            }
-
-                            $.colorbox.close();
-                        }
-                    }).elfinder('instance');
-
-                    // trigger the reveal modal with elfinder inside
+                    // trigger the elFinder modal
                     $.colorbox({
-                        href: div,
-                        inline: true,
+                        href: $triggerUrl,
+                        fastIframe: true,
+                        iframe: true,
                         width: '80%',
                         height: '80%'
                     });
                 });
 
-                element.on('click', 'button.clear', function (event) {
-                    event.preventDefault();
+                // turn non-hidden inputs into a JSON
+                // and save them inside the hidden input that ACTUALLY holds all paths
+                element.on('saveToJson', function(event) {
+                    var $paths = element.find('input').not('[type=hidden]').map(function (idx, item) {
+                        return $(item).val();
+                    }).toArray();
 
-                    if ($multiple) {
-                        $input.parents('.input-group').remove();
-                    } else {
-                        $input.val('');
-                    }
+                    // save the JSON inside the hidden input
+                    $input.val(JSON.stringify($paths));
                 });
 
-                if ($multiple) {
+                if ($multiple === 'true') {
+                    // remote item button
                     element.on('click', 'button.remove', function (event) {
                         event.preventDefault();
-                        $(this).parents('.input-group').remove();
+                        $(this).closest('.input-group').remove();
+                        element.trigger('saveToJson');
+                    });
+
+                    // clear button
+                    element.on('click', 'button.clear', function (event) {
+                        event.preventDefault();
+
+                        $('.input-group', $list).remove();
+                        element.trigger('saveToJson');
+                    });
+
+                    // called after one or more items are selected in the elFinder window
+                    element.on('createInputsForItemsSelectedWithElfinder', element, function(event, files) {
+                        files.forEach(function (file) {
+                            var newInput = $($template);
+                            newInput.find('input').val(file.path);
+                            $list.append(newInput);
+                        });
+
+                        if($sortable){
+                            $list.sortable("refresh")
+                        }
+
+                        element.trigger('saveToJson');
+                    });
+
+                } else {
+                    // clear button
+                    element.on('click', 'button.clear', function (event) {
+                        $input.val('');
+                    });
+
+                    // called after an item has been selected in the elFinder window
+                    element.on('createInputsForItemsSelectedWithElfinder', element, function(event, files) {
+                        $input.val(files[0].path);
                     });
                 }
             }

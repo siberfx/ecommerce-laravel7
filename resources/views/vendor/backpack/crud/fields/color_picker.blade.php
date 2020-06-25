@@ -1,8 +1,8 @@
 <!-- configurable color picker -->
 {{-- https://farbelous.io/bootstrap-colorpicker/ --}}
-<div @include('crud::inc.field_wrapper_attributes') >
+@include('crud::fields.inc.wrapper_start')
     <label>{!! $field['label'] !!}</label>
-    @include('crud::inc.field_translatable_icon')
+    @include('crud::fields.inc.translatable_icon')
     <div class="input-group colorpicker-component">
 
         <input
@@ -10,7 +10,7 @@
         	name="{{ $field['name'] }}"
             value="{{ old(square_brackets_to_dots($field['name'])) ?? $field['value'] ?? $field['default'] ?? '' }}"
             data-init-function="bpFieldInitColorPickerElement"
-            @include('crud::inc.field_attributes')
+            @include('crud::fields.inc.attributes')
         	>
         <div class="input-group-addon">
             <i class="color-preview-{{ $field['name'] }}"></i>
@@ -21,7 +21,7 @@
     @if (isset($field['hint']))
         <p class="help-block">{!! $field['hint'] !!}</p>
     @endif
-</div>
+@include('crud::fields.inc.wrapper_end')
 
 {{-- ########################################## --}}
 {{-- Extra CSS and JS for this particular field --}}

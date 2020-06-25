@@ -296,8 +296,9 @@ class ProductCrudController extends CrudController
 
     public function update(ProductRequest $request, Product $product)
     {
+        $id = request()->id;
         // Get current product data
-        $product = $product->findOrFail($this->crud->request->id);
+        $product = $product->findOrFail($id);
 
         $redirect_location = $this->traitUpdate();
 

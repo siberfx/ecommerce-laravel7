@@ -1,4 +1,4 @@
 <!-- used for heading, separators, etc -->
-<div @include('crud::inc.field_wrapper_attributes') >
+@include('crud::fields.inc.wrapper_start')
 	{!! $field['value'] !!}
-</div>
+@include('crud::fields.inc.wrapper_end')

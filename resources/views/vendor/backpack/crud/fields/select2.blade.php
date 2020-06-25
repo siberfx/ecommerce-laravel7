@@ -1,8 +1,12 @@
 <!-- select2 -->
 @php
     $current_value = old($field['name']) ?? $field['value'] ?? $field['default'] ?? '';
-    $entity_model = $crud->getRelationModel($field['entity'],  - 1);
+    $entity_model = $crud->model;
 
+    //if it's part of a relationship here we have the full related model, we want the key.
+    if (is_object($current_value) && is_subclass_of(get_class($current_value), 'Illuminate\Database\Eloquent\Model') ) {
+        $current_value = $current_value->getKey();
+    }
     if (!isset($field['options'])) {
         $options = $field['model']::all();
     } else {
@@ -10,16 +14,16 @@
     }
 @endphp
 
-<div @include('crud::inc.field_wrapper_attributes') >
+@include('crud::fields.inc.wrapper_start')
 
     <label>{!! $field['label'] !!}</label>
-    @include('crud::inc.field_translatable_icon')
+    @include('crud::fields.inc.translatable_icon')
 
     <select
         name="{{ $field['name'] }}"
         style="width: 100%"
         data-init-function="bpFieldInitSelect2Element"
-        @include('crud::inc.field_attributes', ['default_class' =>  'form-control select2_field'])
+        @include('crud::fields.inc.attributes', ['default_class' =>  'form-control select2_field'])
         >
 
         @if ($entity_model::isColumnNullable($field['name']))
@@ -41,7 +45,7 @@
     @if (isset($field['hint']))
         <p class="help-block">{!! $field['hint'] !!}</p>
     @endif
-</div>
+@include('crud::fields.inc.wrapper_end')
 
 {{-- ########################################## --}}
 {{-- Extra CSS and JS for this particular field --}}

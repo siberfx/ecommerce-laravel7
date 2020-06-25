@@ -18,7 +18,7 @@
         <small>{!! $crud->getSubheading() ?? trans('backpack::crud.reorder').' '.$crud->entity_name_plural !!}.</small>
 
         @if ($crud->hasAccess('list'))
-          <small><a href="{{ url($crud->route) }}" class="hidden-print font-sm"><i class="fa fa-angle-double-left"></i> {{ trans('backpack::crud.back_to_all') }} <span>{{ $crud->entity_name_plural }}</span></a></small>
+          <small><a href="{{ url($crud->route) }}" class="hidden-print font-sm"><i class="la la-angle-double-left"></i> {{ trans('backpack::crud.back_to_all') }} <span>{{ $crud->entity_name_plural }}</span></a></small>
         @endif
     </h2>
 </div>
@@ -82,7 +82,7 @@ function tree_element($entry, $key, $all_entries, $crud)
 
         </div><!-- /.card -->
 
-        <button id="toArray" class="btn btn-success" data-style="zoom-in"><i class="fa fa-save"></i> {{ trans('backpack::crud.save') }}</button>
+        <button id="toArray" class="btn btn-success" data-style="zoom-in"><i class="la la-save"></i> {{ trans('backpack::crud.save') }}</button>
     </div>
 </div>
 @endsection

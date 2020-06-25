@@ -1,5 +1,4 @@
 <!-- view field -->
-
-<div @include('crud::inc.field_wrapper_attributes') >
+@include('crud::fields.inc.wrapper_start')
   @include($field['view'], ['crud' => $crud, 'entry' => $entry ?? null, 'field' => $field])
-</div>
+@include('crud::fields.inc.wrapper_end')

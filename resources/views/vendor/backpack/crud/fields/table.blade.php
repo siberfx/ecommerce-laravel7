@@ -7,7 +7,7 @@
 
     $items = old(square_brackets_to_dots($field['name'])) ?? $field['value'] ?? $field['default'] ?? '';
 
-    // make sure not matter the attribute casting
+    // make sure no matter the attribute casting
     // the $items variable contains a properly defined JSON string
     if (is_array($items)) {
         if (count($items)) {
@@ -23,20 +23,29 @@
     if (! isset($field['columns'])) {
         $field['columns'] = ['value' => 'Value'];
     }
+
+    $field['wrapper'] = $field['wrapper'] ?? $field['wrapperAttributes'] ?? [];
+    $field['wrapper']['data-field-type'] = 'table';
+    $field['wrapper']['data-field-name'] = $field['name'];
 ?>
-<div data-field-type="table" data-field-name="{{ $field['name'] }}" @include('crud::inc.field_wrapper_attributes') >
+@include('crud::fields.inc.wrapper_start')
 
     <label>{!! $field['label'] !!}</label>
-    @include('crud::inc.field_translatable_icon')
+    @include('crud::fields.inc.translatable_icon')
 
-    <input class="array-json" 
-            type="hidden" 
+    <input class="array-json"
+            type="hidden"
             data-init-function="bpFieldInitTableElement"
-            name="{{ $field['name'] }}">
+            name="{{ $field['name'] }}"
+            value="{{ $items }}"
+            data-max="{{$max}}" 
+            data-min="{{$min}}" 
+            data-maxErrorTitle="{{trans('backpack::crud.table_cant_add', ['entity' => $item_name])}}" 
+            data-maxErrorMessage="{{trans('backpack::crud.table_max_reached', ['max' => $max])}}">
 
     <div class="array-container form-group">
 
-        <table class="table table-sm table-striped m-b-0" data-items="{{ $items }}" data-max="{{$max}}" data-min="{{$min}}" data-maxErrorTitle="{{trans('backpack::crud.table_cant_add', ['entity' => $item_name])}}" data-maxErrorMessage="{{trans('backpack::crud.table_max_reached', ['max' => $max])}}">
+        <table class="table table-sm table-striped m-b-0">
 
             <thead>
                 <tr>
@@ -45,8 +54,8 @@
                         {{ $column }}
                     </th>
                     @endforeach
-                    <th class="text-center"> {{-- <i class="fa fa-sort"></i> --}} </th>
-                    <th class="text-center"> {{-- <i class="fa fa-trash"></i> --}} </th>
+                    <th class="text-center"> {{-- <i class="la la-sort"></i> --}} </th>
+                    <th class="text-center"> {{-- <i class="la la-trash"></i> --}} </th>
                 </tr>
             </thead>
 
@@ -55,14 +64,14 @@
                 <tr class="array-row clonable" style="display: none;">
                     @foreach( $field['columns'] as $column => $label)
                     <td>
-                        <input class="form-control form-control-sm" type="text" data-name="item.{{ $column }}">
+                        <input class="form-control form-control-sm" type="text" data-cell-name="item.{{ $column }}">
                     </td>
                     @endforeach
                     <td>
-                        <span class="btn btn-sm btn-light sort-handle pull-right"><span class="sr-only">sort item</span><i class="fa fa-sort" role="presentation" aria-hidden="true"></i></span>
+                        <span class="btn btn-sm btn-light sort-handle pull-right"><span class="sr-only">sort item</span><i class="la la-sort" role="presentation" aria-hidden="true"></i></span>
                     </td>
                     <td>
-                        <button class="btn btn-sm btn-light removeItem" type="button"><span class="sr-only">delete item</span><i class="fa fa-trash" role="presentation" aria-hidden="true"></i></button>
+                        <button class="btn btn-sm btn-light removeItem" type="button"><span class="sr-only">delete item</span><i class="la la-trash" role="presentation" aria-hidden="true"></i></button>
                     </td>
                 </tr>
 
@@ -71,7 +80,7 @@
         </table>
 
         <div class="array-controls btn-group m-t-10">
-            <button class="btn btn-sm btn-light" type="button" data-button-type="addItem"><i class="fa fa-plus"></i> {{trans('backpack::crud.add')}} {{ $item_name }}</button>
+            <button class="btn btn-sm btn-light" type="button" data-button-type="addItem"><i class="la la-plus"></i> {{trans('backpack::crud.add')}} {{ $item_name }}</button>
         </div>
 
     </div>
@@ -80,7 +89,7 @@
     @if (isset($field['hint']))
         <p class="help-block">{!! $field['hint'] !!}</p>
     @endif
-</div>
+@include('crud::fields.inc.wrapper_end')
 
 {{-- ########################################## --}}
 {{-- Extra CSS and JS for this particular field --}}
@@ -98,14 +107,12 @@
         <script>
             function bpFieldInitTableElement(element) {
                 var $tableWrapper = element.parent('[data-field-type=table]');
+                var $rows = (element.attr('value') != '') ? $.parseJSON(element.attr('value')) : '';
+                var $max = element.attr('data-max');
+                var $min = element.attr('data-min');
+                var $maxErrorTitle = element.attr('data-maxErrorTitle');
+                var $maxErrorMessage = element.attr('data-maxErrorMessage');
 
-                var $max = $tableWrapper.find('table').attr('data-max');
-                var $min = $tableWrapper.find('table').attr('data-min');
-
-                var $maxErrorTitle = $tableWrapper.find('table').attr('data-maxErrorTitle');
-                var $maxErrorMessage = $tableWrapper.find('table').attr('data-maxErrorMessage');
-
-                var $rows = $.parseJSON($tableWrapper.find('table').attr('data-items'));
 
                 // add rows with the information from the database
                 if($rows != '[]') {
@@ -114,7 +121,7 @@
                         addItem();
 
                         $.each(this, function(column , value) {
-                            $tableWrapper.find('tbody tr:last').find('input[data-name="item.' + column + '"]').val(value);
+                            $tableWrapper.find('tbody tr:last').find('input[data-cell-name="item.' + column + '"]').val(value);
                         });
 
                         // if it's the last row, update the JSON
@@ -188,8 +195,7 @@
 
                 function updateTableFieldJson() {
                     var $rows = $tableWrapper.find('tbody tr').not('.clonable');
-                    var $fieldName = $tableWrapper.attr('data-field-name');
-                    var $hiddenField = $($tableWrapper).find('input[name='+$fieldName+']');
+                    var $hiddenField = $tableWrapper.find('input.array-json');
 
                     var json = '[';
                     var otArr = [];
@@ -198,7 +204,7 @@
                         var itArr = [];
                         x.each(function() {
                             if(this.value.length > 0) {
-                                var key = $(this).attr('data-name').replace('item.','');
+                                var key = $(this).attr('data-cell-name').replace('item.','');
                                 var value = this.value.replace(/(['"])/g, "\\$1"); // escapes single and double quotes
 
                                 itArr.push('"' + key + '":"' + value + '"');

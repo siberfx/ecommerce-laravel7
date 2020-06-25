@@ -21,7 +21,7 @@
 @endsection
 
 @section('content')
-<!-- Default box -->
+  <!-- Default box -->
   <div class="row">
 
     <!-- THE ACTUAL CONTENT -->
@@ -29,17 +29,17 @@
       <div class="">
 
         <div class="row mb-0">
-          <div class="col-6">
+          <div class="col-sm-6">
             @if ( $crud->buttons()->where('stack', 'top')->count() ||  $crud->exportButtons())
-            <div class="hidden-print {{ $crud->hasAccess('create')?'with-border':'' }}">
+              <div class="hidden-print {{ $crud->hasAccess('create')?'with-border':'' }}">
 
-              @include('crud::inc.button_stack', ['stack' => 'top'])
+                @include('crud::inc.button_stack', ['stack' => 'top'])
 
-            </div>
+              </div>
             @endif
           </div>
-          <div class="col-6">
-              <div id="datatable_search_stack" class="float-right"></div>
+          <div class="col-sm-6">
+            <div id="datatable_search_stack"></div>
           </div>
         </div>
 
@@ -71,33 +71,33 @@
 
                     {{-- If it is an export field only, we are done. --}}
                     @if(isset($column['exportOnlyField']) && $column['exportOnlyField'] === true)
-                        data-visible="false"
-                        data-visible-in-table="false"
-                        data-can-be-visible-in-table="false"
-                        data-visible-in-modal="false"
-                        data-visible-in-export="true"
-                        data-force-export="true"
+                      data-visible="false"
+                      data-visible-in-table="false"
+                      data-can-be-visible-in-table="false"
+                      data-visible-in-modal="false"
+                      data-visible-in-export="true"
+                      data-force-export="true"
 
                     @else
 
-                        data-visible-in-table="{{var_export($column['visibleInTable'] ?? false)}}"
-                        data-visible="{{var_export($column['visibleInTable'] ?? true)}}"
-                        data-can-be-visible-in-table="true"
-                        data-visible-in-modal="{{var_export($column['visibleInModal'] ?? true)}}"
-                        @if(isset($column['visibleInExport']))
-                            @if($column['visibleInExport'] === false)
-                            data-visible-in-export="false"
-                            data-force-export="false"
-                            @else
-                            data-visible-in-export="true"
-                            data-force-export="true"
-                            @endif
+                      data-visible-in-table="{{var_export($column['visibleInTable'] ?? false)}}"
+                      data-visible="{{var_export($column['visibleInTable'] ?? true)}}"
+                      data-can-be-visible-in-table="true"
+                      data-visible-in-modal="{{var_export($column['visibleInModal'] ?? true)}}"
+                      @if(isset($column['visibleInExport']))
+                        @if($column['visibleInExport'] === false)
+                          data-visible-in-export="false"
+                          data-force-export="false"
                         @else
-                            data-visible-in-export="true"
-                            data-force-export="false"
+                          data-visible-in-export="true"
+                          data-force-export="true"
                         @endif
+                      @else
+                        data-visible-in-export="true"
+                        data-force-export="false"
+                      @endif
                     @endif
-                    >
+                  >
                     {!! $column['label'] !!}
                   </th>
                 @endforeach
@@ -155,8 +155,7 @@
 @endsection
 
 @section('after_scripts')
-	@include('crud::inc.datatables_logic')
-
+  @include('crud::inc.datatables_logic')
   <script src="{{ asset('packages/backpack/crud/js/crud.js') }}"></script>
   <script src="{{ asset('packages/backpack/crud/js/form.js') }}"></script>
   <script src="{{ asset('packages/backpack/crud/js/list.js') }}"></script>
